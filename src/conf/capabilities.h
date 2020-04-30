@@ -331,6 +331,9 @@ virBitmapPtr virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
 
 int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 
+int virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo);
+
+
 int virCapabilitiesInitPages(virCapsPtr caps);
 
 virCapsHostNUMAPtr virCapabilitiesHostNUMANew(void);

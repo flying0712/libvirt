@@ -172,6 +172,15 @@ struct _virNodeInfo {
                              unusual numa topology */
 };
 
+typedef struct _virNodeExtInfo virNodeExtInfo;
+
+struct _virNodeExtInfo {
+    char cpu_model[128];       /* 详细 CPU model */
+
+};
+
+
+
 /**
  * VIR_NODE_CPU_STATS_FIELD_LENGTH:
  *
@@ -418,6 +427,15 @@ int virNodeGetCPUMap(virConnectPtr conn,
  */
 
 typedef virNodeInfo *virNodeInfoPtr;
+
+
+/**
+ * virNodeExtInfoPtr: 扩展信息
+ *
+ * a virNodeExtInfoPtr is a pointer to a virNodeExtInfo structure.
+ */
+typedef virNodeExtInfo *virNodeExtInfoPtr;
+
 
 /**
  * virNodeCPUStatsPtr:
@@ -698,6 +716,10 @@ int                     virConnectGetMaxVcpus   (virConnectPtr conn,
                                                  const char *type);
 int                     virNodeGetInfo          (virConnectPtr conn,
                                                  virNodeInfoPtr info);
+
+int                     virNodeExtGetInfo          (virConnectPtr conn,
+                                                 virNodeExtInfoPtr info);
+
 char *                  virConnectGetCapabilities (virConnectPtr conn);
 
 int                     virNodeGetCPUStats (virConnectPtr conn,

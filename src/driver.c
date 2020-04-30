@@ -178,7 +178,8 @@ virConnectPtr virGetConnectNWFilter(void)
 
 virConnectPtr virGetConnectNodeDev(void)
 {
-    return virGetConnectGeneric(&connectNodeDev, "nodedev");
+
+	return virGetConnectGeneric(&connectNodeDev, "nodedev");
 }
 
 virConnectPtr virGetConnectSecret(void)

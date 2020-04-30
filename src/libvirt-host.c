@@ -392,6 +392,7 @@ virConnectGetMaxVcpus(virConnectPtr conn,
 }
 
 
+
 /**
  * virNodeGetInfo:
  * @conn: pointer to the hypervisor connection
@@ -441,6 +442,38 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     virDispatchError(conn);
     return -1;
 }
+
+
+
+/**
+ * virNodeExtGetInfo:
+扩展
+ */
+int
+virNodeExtGetInfo (virConnectPtr conn, virNodeExtInfoPtr info)
+{
+    VIR_DEBUG("conn=%p, info=%p", conn, info);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(info, error);
+
+    if (conn->driver->nodeGetInfo) {
+        int ret;
+        ret = conn->driver->nodeExtGetInfo(conn, info);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
 
 
 /**

@@ -539,6 +539,10 @@ struct remote_node_get_info_ret { /* insert@1 */
     int threads;
 };
 
+struct remote_node_ext_get_info_ret { /* insert@1 */
+    char cpu_model[128];
+};
+
 struct remote_connect_get_capabilities_ret {
     remote_nonnull_string capabilities;
 };
@@ -6665,4 +6669,11 @@ enum remote_procedure {
      * @acl: domain:read
      */
     REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422
+	
+	    /**
+     * @generate: both
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_NODE_EXT_GET_INFO = 423,
 };

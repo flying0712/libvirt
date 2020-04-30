@@ -20094,10 +20094,21 @@ static int
 qemuNodeGetInfo(virConnectPtr conn,
                 virNodeInfoPtr nodeinfo)
 {
+
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
     return virCapabilitiesGetNodeInfo(nodeinfo);
+}
+
+static int 
+qemuNodeExtGetInfo(virConnectPtr conn, 
+						virNodeExtInfoPtr nodeinfo)
+{
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+    return virExtCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 
@@ -23156,6 +23167,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .connectGetSysinfo = qemuConnectGetSysinfo, /* 0.8.8 */
     .connectGetMaxVcpus = qemuConnectGetMaxVcpus, /* 0.2.1 */
     .nodeGetInfo = qemuNodeGetInfo, /* 0.2.0 */
+    .nodeExtGetInfo = qemuNodeExtGetInfo, /* 0.2.0 */
     .connectGetCapabilities = qemuConnectGetCapabilities, /* 0.2.1 */
     .connectListDomains = qemuConnectListDomains, /* 0.2.0 */
     .connectNumOfDomains = qemuConnectNumOfDomains, /* 0.2.0 */

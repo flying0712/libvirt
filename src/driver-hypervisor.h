@@ -75,6 +75,10 @@ typedef int
 (*virDrvNodeGetInfo)(virConnectPtr conn,
                      virNodeInfoPtr info);
 
+typedef int
+(*virDrvNodeExtGetInfo)(virConnectPtr conn,
+                        virNodeExtInfoPtr info);
+
 typedef char *
 (*virDrvConnectGetCapabilities)(virConnectPtr conn);
 
@@ -1415,6 +1419,7 @@ struct _virHypervisorDriver {
     virDrvConnectGetSysinfo connectGetSysinfo;
     virDrvConnectGetMaxVcpus connectGetMaxVcpus;
     virDrvNodeGetInfo nodeGetInfo;
+    virDrvNodeExtGetInfo nodeExtGetInfo;
     virDrvConnectGetCapabilities connectGetCapabilities;
     virDrvConnectListDomains connectListDomains;
     virDrvConnectNumOfDomains connectNumOfDomains;

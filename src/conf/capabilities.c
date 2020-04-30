@@ -1439,8 +1439,13 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 
     memset(nodeinfo, 0, sizeof(*nodeinfo));
 
-    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) < 0)
+	printf("----------------------------+++++++++++++++++++++22\n");
+    if (virStrcpyStatic(nodeinfo->model, "Intel(R) Core(TM)") < 0)
         return -1;
+
+
+//    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) < 0)
+//        return -1;
 
     if (virHostMemGetInfo(&memorybytes, NULL) < 0)
         return -1;
@@ -1454,6 +1459,22 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 
     return 0;
 }
+
+
+int
+virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo)
+{
+
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
+
+	printf("----------------------------+++++++++++++++++++++22\n");
+    if (virStrcpyStatic(nodeinfo->cpu_model, "Intel(R) Core(TM) i7-6700") < 0)
+        return -1;
+
+
+    return 0;
+}
+
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
 static int
