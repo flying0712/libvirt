@@ -18,7 +18,7 @@
 # using this capability.
 #
 # This is enabled by default, uncomment this to disable it
-#listen_tls = 0
+listen_tls = 0
 
 # Listen for unencrypted TCP connections on the public TCP/IP port.
 # NB, must pass the --listen flag to the @DAEMON_NAME@ process for this to
@@ -32,7 +32,7 @@
 # DIGEST_MD5 and GSSAPI (Kerberos5)
 #
 # This is disabled by default, uncomment this to enable it.
-#listen_tcp = 1
+listen_tcp = 1
 
 
 
@@ -50,7 +50,7 @@
 # This setting is not required or honoured if using systemd socket
 # activation with systemd version >= 227
 #
-#tcp_port = "16509"
+tcp_port = "16509"
 
 
 # Override the default configuration which binds to all network
@@ -63,7 +63,7 @@
 # startup (e.g. with systemd), binding to addresses other than
 # the wildcards (0.0.0.0/::) might not be available yet.
 #
-#listen_addr = "192.168.0.1"
+listen_addr = "0.0.0.0"
 
 
 @END@
@@ -168,6 +168,7 @@
 # use, always enable SASL and use the GSSAPI or DIGEST-MD5
 # mechanism in @sysconfdir@/sasl2/libvirt.conf
 #auth_tcp = "sasl"
+auth_tcp = "none"
 
 # Change the authentication scheme for TLS sockets.
 #
