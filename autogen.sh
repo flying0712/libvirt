@@ -17,6 +17,16 @@ git submodule update --init || exit 1
 
 autoreconf --verbose --force --install || exit 1
 
+if test "x$1" = "x--myinstall"; then
+    shift
+    prefix=/home/lei/install_test
+    libdir=$prefix/lib
+    sysconfdir=/home/lei/install_test/etc
+    localstatedir=/home/lei/install_test/var
+
+    EXTRA_ARGS="--prefix=$prefix --sysconfdir=$sysconfdir --localstatedir=$localstatedir --libdir=$libdir"
+fi
+
 if test "x$1" = "x--system"; then
     shift
     prefix=/usr
@@ -28,6 +38,8 @@ if test "x$1" = "x--system"; then
     fi
     EXTRA_ARGS="--prefix=$prefix --sysconfdir=$sysconfdir --localstatedir=$localstatedir --libdir=$libdir"
 fi
+
+
 
 cd "$olddir"
 
