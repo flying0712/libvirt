@@ -1439,7 +1439,8 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 
     memset(nodeinfo, 0, sizeof(*nodeinfo));
 
-	printf("----------------------------+++++++++++++++++++++22\n");
+	VIR_INFO("----------------------------+++++++++++++++++++++22\n");
+	
     if (virStrcpyStatic(nodeinfo->model, "Intel(R) Core(TM)") < 0)
         return -1;
 
@@ -1467,7 +1468,7 @@ virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo)
 
     memset(nodeinfo, 0, sizeof(*nodeinfo));
 
-	printf("----------------------------+++++++++++++++++++++22\n");
+	VIR_INFO("+++++++++++++++++++++22\n");
     if (virStrcpyStatic(nodeinfo->cpu_model, "Intel(R) Core(TM) i7-6700") < 0)
         return -1;
 

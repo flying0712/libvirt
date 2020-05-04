@@ -172,10 +172,13 @@ struct _virNodeInfo {
                              unusual numa topology */
 };
 
+# define CPUMODEL_MAX (128)
+
 typedef struct _virNodeExtInfo virNodeExtInfo;
 
 struct _virNodeExtInfo {
-    char cpu_model[128];       /* 详细 CPU model */
+    char cpu_model[CPUMODEL_MAX];       /* 详细 CPU model */
+    int num;
 
 };
 

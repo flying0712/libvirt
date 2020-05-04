@@ -435,6 +435,18 @@ sockets per NUMA cell. The information libvirt displays is dependent
 upon what each architecture may provide.
 
 
+nodeextinfo
+--------
+
+**Syntax:**
+
+.. code-block::
+
+   nodeextinfo
+
+Returns ext information about the node, like CPU model.
+
+
 nodecpumap
 ----------
 

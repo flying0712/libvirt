@@ -677,6 +677,35 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 }
 
 /*
+ * "nodeinfo" command
+ */
+static const vshCmdInfo info_nodeextinfo[] = {
+    {.name = "help",
+     .data = N_("node ext information")
+    },
+    {.name = "desc",
+     .data = N_("Returns ext information about the node.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdNodeExtinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virNodeExtInfo info;
+    virshControlPtr priv = ctl->privData;
+
+    if (virNodeExtGetInfo(priv->conn, &info) < 0) {
+        vshError(ctl, "%s", _("failed to get node information"));
+        return false;
+    }
+    vshPrint(ctl, "%-20s %s\n", _("CPU model:"), info.cpu_model);
+
+    return true;
+}
+
+
+/*
  * "nodecpumap" command
  */
 static const vshCmdInfo info_node_cpumap[] = {
@@ -1895,6 +1924,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdNodeinfo,
      .opts = NULL,
      .info = info_nodeinfo,
+     .flags = 0
+    },
+    {.name = "nodeextinfo",
+     .handler = cmdNodeExtinfo,
+     .opts = NULL,
+     .info = info_nodeextinfo,
      .flags = 0
     },
     {.name = "nodememstats",

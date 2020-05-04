@@ -280,6 +280,10 @@ const REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX = 2048;
  */
 const REMOTE_NETWORK_PORT_PARAMETERS_MAX = 16;
 
+/*
+ * Maximum length of a ext CPU modle field.
+ */
+const REMOTE_NODE_CPUMODEL_MAX = 128;
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -541,6 +545,7 @@ struct remote_node_get_info_ret { /* insert@1 */
 
 struct remote_node_ext_get_info_ret { /* insert@1 */
     char cpu_model[128];
+    int num;
 };
 
 struct remote_connect_get_capabilities_ret {
@@ -6668,12 +6673,12 @@ enum remote_procedure {
      * @priority: high
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422
+    REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422,
 	
 	    /**
      * @generate: both
      * @priority: high
      * @acl: connect:read
      */
-    REMOTE_PROC_NODE_EXT_GET_INFO = 423,
+    REMOTE_PROC_NODE_EXT_GET_INFO = 423
 };

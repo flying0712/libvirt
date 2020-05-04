@@ -66,6 +66,7 @@ virCapabilitiesFormatXML;
 virCapabilitiesFreeGuest;
 virCapabilitiesFreeMachines;
 virCapabilitiesGetNodeInfo;
+virExtCapabilitiesGetNodeInfo;
 virCapabilitiesHostInitIOMMU;
 virCapabilitiesHostNUMAAddCell;
 virCapabilitiesHostNUMAGetCpus;

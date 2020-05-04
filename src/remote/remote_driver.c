@@ -8449,6 +8449,7 @@ static virHypervisorDriver hypervisor_driver = {
     .connectGetSysinfo = remoteConnectGetSysinfo, /* 0.8.8 */
     .connectGetMaxVcpus = remoteConnectGetMaxVcpus, /* 0.3.0 */
     .nodeGetInfo = remoteNodeGetInfo, /* 0.3.0 */
+    .nodeExtGetInfo = remoteNodeExtGetInfo, /* 0.2.0 */
     .connectGetCapabilities = remoteConnectGetCapabilities, /* 0.3.0 */
     .connectListDomains = remoteConnectListDomains, /* 0.3.0 */
     .connectNumOfDomains = remoteConnectNumOfDomains, /* 0.3.0 */
