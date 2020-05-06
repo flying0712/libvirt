@@ -20,7 +20,8 @@ AC_INIT([libvirt], [6.2.0], [libvir-list@redhat.com], [], [https://libvirt.org])
 
 if test $srcdir = "."
 then
-  AC_MSG_ERROR([Build directory must be different from source directory])
+  #AC_MSG_ERROR([Build directory must be different from source directory])
+  AC_MSG_NOTICE([the build directory is source directory])
 fi
 
 AC_CONFIG_SRCDIR([src/libvirt.c])

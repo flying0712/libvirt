@@ -436,7 +436,7 @@ upon what each architecture may provide.
 
 
 nodeextinfo
---------
+-----------
 
 **Syntax:**
 
@@ -444,7 +444,10 @@ nodeextinfo
 
    nodeextinfo
 
-Returns ext information about the node, like CPU model.
+Returns ext information about the node, like verbose CPU model,
+e.g. Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz. The output corresponds to virNodeExtInfo
+structure. The information libvirt displays is dependent
+upon what each architecture may provide.
 
 
 nodecpumap
