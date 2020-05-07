@@ -444,15 +444,25 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 }
 
 
-
 /**
- * virNodeExtGetInfo:
-扩展
- */
+* virNodeExtGetInfo:
+* @conn: pointer to the hypervisor connection
+* @info: pointer to a virNodeInfo structure allocated by the user
+        *
+        * Extract hardware information about the node.
+*
+* Use of this API is strongly discouraged as the information provided
+        * is not guaranteed to be accurate on all hardware platforms.
+*
+* return verbose cpu model
+*
+* Returns 0 in case of success and -1 in case of failure.
+*/
 int
 virNodeExtGetInfo (virConnectPtr conn, virNodeExtInfoPtr info)
 {
     VIR_DEBUG("conn=%p, info=%p", conn, info);
+
 
     virResetLastError();
 

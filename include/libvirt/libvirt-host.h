@@ -172,6 +172,11 @@ struct _virNodeInfo {
                              unusual numa topology */
 };
 
+/**
+ * CPUMODEL_MAX:
+ *
+ * Macro providing the maximum length of the virNodeExtGetInfo cpu model string.
+ */
 # define CPUMODEL_MAX (128)
 
 typedef struct _virNodeExtInfo virNodeExtInfo;

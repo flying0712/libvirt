@@ -50,6 +50,7 @@
 #include "qemu_security.h"
 #include "qemu_checkpoint.h"
 #include "qemu_backup.h"
+#include "qemu_ext.h"
 
 #include "virerror.h"
 #include "virlog.h"
@@ -20101,14 +20102,40 @@ qemuNodeGetInfo(virConnectPtr conn,
     return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
+
 static int 
 qemuNodeExtGetInfo(virConnectPtr conn, 
 						virNodeExtInfoPtr nodeinfo)
 {
+
+    // CPUInfo cpu_info;
     if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
         return -1;
 
-    return virExtCapabilitiesGetNodeInfo(nodeinfo);
+/*    VIR_INFO("+++++++++++++++TEST begin\n");
+
+    virExtNodeGetCPUCores(&cpu_info);
+
+    VIR_INFO("[%d %d %d]\n", cpu_info.CPU_sockets, cpu_info.CPU_sockets, cpu_info.CPU_sockets);
+
+    VIR_INFO("+++++++++++++++END\n");*/
+
+
+    VIR_INFO("+++++++++++++++TEST begin\n");
+    virExtNodeGetCPUModel(nodeinfo->cpu_model);
+
+    int i = 0;
+    int realIFNumber = 0;
+    NodeIFStat nodeIfStat[4];
+    realIFNumber = virExtNodeGetIFStat(nodeIfStat, 4);
+    for(i = 0; i < realIFNumber; i ++)
+    {
+        VIR_INFO("ifname | rx_rat | tx_rate: %s | %d | %d \n", nodeIfStat[i].ifname, nodeIfStat[i].rx_rate, nodeIfStat[i].rx_rate);
+    }
+
+    VIR_INFO("+++++++++++++++END\n");
+
+    return virExtNodeGetCPUModel(nodeinfo->cpu_model);
 }
 
 
