@@ -3140,6 +3140,26 @@ struct remote_node_ext_get_info_ret {
     int num;
 };
 
+struct remote_node_ext_list_interfaces_args {
+    int maxnames;
+};
+
+struct remote_node_ext_list_interfaces_ret {
+        struct {
+                 u_int              names_len;
+                 remote_nonnull_string * names_val;
+         } names;
+};
+
+struct remote_node_ext_get_if_stat_args {
+    remote_nonnull_string ifname;
+};
+
+struct remote_node_ext_get_if_stat_ret {
+    int64_t rx_rate;
+    int64_t tx_rate;
+};
+
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3564,4 +3584,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BACKUP_BEGIN = 421,
         REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422,
         REMOTE_PROC_NODE_EXT_GET_INFO = 423,
+        REMOTE_PROC_NODE_EXT_LIST_INTERFACES = 424,
+        REMOTE_PROC_NODE_EXT_GET_IF_STAT = 425
 };

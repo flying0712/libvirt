@@ -706,6 +706,90 @@ cmdNodeExtinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
 
 /*
+ * "nodeiflist" command
+ */
+static const vshCmdInfo info_nodeiflist[] = {
+        {.name = "help",
+                .data = N_("node interfaces list")
+        },
+        {.name = "desc",
+                .data = N_("Returns node interfaces list.")
+        },
+        {.name = NULL}
+};
+
+static bool
+cmdNodeExtIfList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControlPtr priv = ctl->privData;
+
+    int realIfNum = 0;
+    int i = 0;
+
+    char * ifnames[4] = {0};
+    realIfNum = virNodeExtListInterfaces(priv->conn, ifnames, 4);
+
+    if ( realIfNum < 0) {
+
+        vshError(ctl, "%s", _("failed to get node if list"));
+        return false;
+    }
+    for (i = 0; i < realIfNum; i++)
+    {
+        vshPrint(ctl, "%-20s %d-%s\n", _("if: "), i, ifnames[i]);
+    }
+
+    return true;
+}
+
+
+/*
+ * "nodegetifstat" command
+ */
+static const vshCmdInfo info_nodegetifstat[] = {
+        {.name = "help",
+                .data = N_("node if stats  ")
+        },
+        {.name = "desc",
+                .data = N_("Returns node if stats .")
+        },
+        {.name = NULL}
+};
+
+static bool
+cmdNodeExtGetIfStat(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControlPtr priv = ctl->privData;
+
+    virNodeExtIfStat node_if_stat;
+    int realIfNum = 0;
+    int i = 0;
+
+    char *ifnames[4] = {0};
+    realIfNum = virNodeExtListInterfaces(priv->conn, ifnames, 4);
+
+    if ( realIfNum < 0) {
+
+        vshError(ctl, "%s", _("failed to get node if list"));
+        return false;
+    }
+    for (i = 0; i < realIfNum; i++)
+    {
+        vshPrint(ctl, "%-20s %d-%s\n", _("if: "), i, ifnames[i]);
+
+    }
+
+    for (i = 0; i < realIfNum; i++)
+    {
+        virNodeExtGetIfStat(priv->conn, ifnames[i], &node_if_stat);
+        vshPrint(ctl, "%-20s %d-%s: %d %d\n", _("if: "), i, ifnames[i], node_if_stat.rx_rate, node_if_stat.tx_rate);
+    }
+
+    return true;
+}
+
+
+/*
  * "nodecpumap" command
  */
 static const vshCmdInfo info_node_cpumap[] = {
@@ -1931,6 +2015,18 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .opts = NULL,
      .info = info_nodeextinfo,
      .flags = 0
+    },
+    {.name = "nodeiflist",
+            .handler = cmdNodeExtIfList,
+            .opts = NULL,
+            .info = info_nodeiflist,
+            .flags = 0
+    },
+    {.name = "nodegetifstat",
+            .handler = cmdNodeExtGetIfStat,
+            .opts = NULL,
+            .info = info_nodegetifstat,
+            .flags = 0
     },
     {.name = "nodememstats",
      .handler = cmdNodeMemStats,

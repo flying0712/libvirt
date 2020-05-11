@@ -1797,3 +1797,70 @@ virNodeGetSEVInfo(virConnectPtr conn,
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+* virNodeExtGetIfStat:
+* @conn: pointer to the hypervisor connection
+* @node_if_stat: pointer to a NodeIFStat structure allocated by the user
+        *
+        * Extract hardware information about the node.
+*
+* Use of this API is strongly discouraged as the information provided
+        * is not guaranteed to be accurate on all hardware platforms.
+*
+* return verbose cpu model
+*
+* Returns 0 in case of success and -1 in case of failure.
+*/
+int
+virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr node_if_stat)
+{
+    VIR_DEBUG("conn=%p, node_if_stat=%p", conn, node_if_stat);
+
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(node_if_stat, error);
+
+    if (conn->driver->nodeExtGetIfStat) {
+        int ret;
+        ret = conn->driver->nodeExtGetIfStat(conn, ifname, node_if_stat);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifnames)
+{
+    VIR_DEBUG("conn=%p, ifnames=%p", conn, ifnames);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(ifnames, error);
+
+
+    if (conn->driver->nodeExtListInterfaces) {
+        int ret;
+        ret = conn->driver->nodeExtListInterfaces(conn, ifnames, maxifnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+error:
+    virDispatchError(conn);
+    return -1;
+
+}

@@ -872,6 +872,8 @@ LIBVIRT_6.0.0 {
         virDomainBackupBegin;
         virDomainBackupGetXMLDesc;
         virNodeExtGetInfo;
+		virNodeExtListInterfaces;
+        virNodeExtGetIfStat;
 } LIBVIRT_5.10.0;
 
 

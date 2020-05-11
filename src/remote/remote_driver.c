@@ -8685,6 +8685,8 @@ static virHypervisorDriver hypervisor_driver = {
     .domainAgentSetResponseTimeout = remoteDomainAgentSetResponseTimeout, /* 5.10.0 */
     .domainBackupBegin = remoteDomainBackupBegin, /* 6.0.0 */
     .domainBackupGetXMLDesc = remoteDomainBackupGetXMLDesc, /* 6.0.0 */
+    .nodeExtListInterfaces = remoteNodeExtListInterfaces, /* 6.2.0 */
+    .nodeExtGetIfStat = remoteNodeExtGetIfStat, /* 6.2.0 */
 };
 
 static virNetworkDriver network_driver = {
@@ -8785,6 +8787,9 @@ static virStorageDriver storage_driver = {
     .storageVolResize = remoteStorageVolResize, /* 0.9.10 */
     .storagePoolIsActive = remoteStoragePoolIsActive, /* 0.7.3 */
     .storagePoolIsPersistent = remoteStoragePoolIsPersistent, /* 0.7.3 */
+	
+
+
 };
 
 static virSecretDriver secret_driver = {

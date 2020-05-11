@@ -50,8 +50,6 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_monitor_text.h \
 	qemu/qemu_monitor_json.c \
 	qemu/qemu_monitor_json.h \
-	qemu/qemu_ext.c \
-	qemu/qemu_ext.h \
 	qemu/qemu_driver.c \
 	qemu/qemu_driver.h \
 	qemu/qemu_interface.c \

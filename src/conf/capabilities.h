@@ -331,9 +331,6 @@ virBitmapPtr virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
 
 int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 
-int virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo);
-
-
 int virCapabilitiesInitPages(virCapsPtr caps);
 
 virCapsHostNUMAPtr virCapabilitiesHostNUMANew(void);
@@ -346,3 +343,11 @@ void virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr);
 int virCapabilitiesInitCaches(virCapsPtr caps);
 
 void virCapabilitiesHostInitIOMMU(virCapsPtr caps);
+
+
+int virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo);
+
+int virExtCapabilitiesNodeListInterfaces(char **ifnames, int maxifnames);
+
+int virExtCapabilitiesNodeGetIfStat(const char * ifname, virNodeExtIfStatPtr node_if_stat);
+

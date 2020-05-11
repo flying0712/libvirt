@@ -450,6 +450,32 @@ structure. The information libvirt displays is dependent
 upon what each architecture may provide.
 
 
+nodeiflist
+----------
+
+**Syntax:**
+
+.. code-block::
+
+   nodeiflist
+
+Returns ext nodeiflist information about the node,
+upon what each architecture may provide.
+
+
+nodegetifstat
+-------------
+
+**Syntax:**
+
+.. code-block::
+
+   nodegetifstat
+
+Returns if stats  of the node,
+upon what each architecture may provide.
+
+
 nodecpumap
 ----------
 

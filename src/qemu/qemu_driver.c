@@ -20103,40 +20103,6 @@ qemuNodeGetInfo(virConnectPtr conn,
 }
 
 
-static int 
-qemuNodeExtGetInfo(virConnectPtr conn, 
-						virNodeExtInfoPtr nodeinfo)
-{
-
-    // CPUInfo cpu_info;
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
-        return -1;
-
-/*    VIR_INFO("+++++++++++++++TEST begin\n");
-
-    virExtNodeGetCPUCores(&cpu_info);
-
-    VIR_INFO("[%d %d %d]\n", cpu_info.CPU_sockets, cpu_info.CPU_sockets, cpu_info.CPU_sockets);
-
-    VIR_INFO("+++++++++++++++END\n");*/
-
-
-    VIR_INFO("+++++++++++++++TEST begin\n");
-    virExtNodeGetCPUModel(nodeinfo->cpu_model);
-
-    int i = 0;
-    int realIFNumber = 0;
-    NodeIFStat nodeIfStat[4];
-    realIFNumber = virExtNodeGetIFStat(nodeIfStat, 4);
-    for(i = 0; i < realIFNumber; i ++)
-    {
-        VIR_INFO("ifname | rx_rat | tx_rate: %s | %d | %d \n", nodeIfStat[i].ifname, nodeIfStat[i].rx_rate, nodeIfStat[i].rx_rate);
-    }
-
-    VIR_INFO("+++++++++++++++END\n");
-
-    return virExtNodeGetCPUModel(nodeinfo->cpu_model);
-}
 
 
 static int
@@ -23181,6 +23147,70 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
     return ret;
 }
 
+static int
+qemuNodeExtGetInfo(virConnectPtr conn,
+                   virNodeExtInfoPtr nodeinfo)
+{
+
+    // CPUInfo cpu_info;
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+    VIR_INFO("+++++++++++++++TEST begin\n");
+
+    VIR_INFO("+++++++++++++++END\n");
+    return virExtCapabilitiesGetNodeInfo(nodeinfo->cpu_model);
+}
+
+
+static int
+qemuNodeExtListInterfaces(virConnectPtr conn, char ** ifnames, int maxifnames)
+{
+
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+
+    VIR_INFO("+++++++++++++++ begin\n");
+
+    int i = 0;
+    int realIFNumber = 0;
+
+    realIFNumber = virExtCapabilitiesNodeListInterfaces(ifnames, maxifnames);
+    for(i = 0; i < realIFNumber; i ++)
+    {
+        VIR_INFO("ifname-%d: %s",i, ifnames[i]);
+    }
+
+    // strncpy(ifnames[i], nodeIfStat[i].ifname, 16);
+
+    VIR_INFO("+++++++++++++++ end\n");
+    return realIFNumber;
+
+}
+
+
+static int 
+qemuNodeExtGetIfStat(virConnectPtr conn, const char * ifname, virNodeExtIfStatPtr node_if_stat)
+{
+
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+		
+
+    VIR_INFO("+++++++++++++++ begin\n");
+
+    int i = 0;
+    int realIFNumber = 0;
+    virExtCapabilitiesNodeGetIfStat(ifname, node_if_stat);
+
+    VIR_INFO("ifname | rx_rat | tx_rate: %s | %d | %d \n", ifname, node_if_stat->rx_rate, node_if_stat->tx_rate);
+
+    VIR_INFO("+++++++++++++++ end\n");
+    return realIFNumber;
+
+}
+
 
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
@@ -23194,7 +23224,6 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .connectGetSysinfo = qemuConnectGetSysinfo, /* 0.8.8 */
     .connectGetMaxVcpus = qemuConnectGetMaxVcpus, /* 0.2.1 */
     .nodeGetInfo = qemuNodeGetInfo, /* 0.2.0 */
-    .nodeExtGetInfo = qemuNodeExtGetInfo, /* 0.2.0 */
     .connectGetCapabilities = qemuConnectGetCapabilities, /* 0.2.1 */
     .connectListDomains = qemuConnectListDomains, /* 0.2.0 */
     .connectNumOfDomains = qemuConnectNumOfDomains, /* 0.2.0 */
@@ -23422,6 +23451,10 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainAgentSetResponseTimeout = qemuDomainAgentSetResponseTimeout, /* 5.10.0 */
     .domainBackupBegin = qemuDomainBackupBegin, /* 6.0.0 */
     .domainBackupGetXMLDesc = qemuDomainBackupGetXMLDesc, /* 6.0.0 */
+
+    .nodeExtGetInfo = qemuNodeExtGetInfo, /* 0.2.0 */
+	.nodeExtGetIfStat = qemuNodeExtGetIfStat, /* 6.2.0 */
+	.nodeExtListInterfaces = qemuNodeExtListInterfaces, /* 6.2.0 */
 };
 
 

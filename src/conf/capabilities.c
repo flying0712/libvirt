@@ -1462,19 +1462,6 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 }
 
 
-int
-virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo)
-{
-
-    memset(nodeinfo, 0, sizeof(*nodeinfo));
-
-	VIR_INFO("+++++++++++++++++++++22\n");
-    if (virStrcpyStatic(nodeinfo->cpu_model, "Intel(R) Core(TM) i7-6700") < 0)
-        return -1;
-
-
-    return 0;
-}
 
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
@@ -2028,4 +2015,545 @@ void
 virCapabilitiesHostInitIOMMU(virCapsPtr caps)
 {
     caps->host.iommu = virHostHasIOMMU();
+}
+
+
+/*======================================================*/
+/** new api */
+/** new api */
+
+#define CMD_MAX_LEN 256
+
+#define CMD_SUFFIX "2>&1; echo \"shell_cmd_result=$?\""
+
+#define CMD_DOMAIN_START "virsh start %s"
+#define CMD_DOMAIN_RESET "virsh destroy %s && virsh start %s"
+
+#define CMD_DOMAIN_GET_NAME_BY_UUID "virsh dominfo %s | grep \"^Name:\""
+#define CMD_DOMAIN_CHECK_SPICE_PORT_CFG "[[ `grep \"<graphics type='spice'\" /etc/libvirt/qemu/%s.xml | wc -l` -eq \"1\" ]] && echo \"match_num == 1\" || echo \"match_num != 1\" "
+#define CMD_DOMAIN_SET_SPICE_PORT "sed -i \"/<graphics type='spice'/ s/port=[^ ]* /port='%d' /\" /etc/libvirt/qemu/%s.xml && virsh define /etc/libvirt/qemu/%s.xml"
+#define CMD_DOMAIN_GET_MEM_STAT "virsh dommemstat %s | grep -e 'actual\\|unused' "
+#define CMD_NODE_GET_MEM_STAT "virsh nodememstats | grep -e 'total\\|free' "
+
+// #define CMD_NODE_GET_IF_STAT "ifstat | grep -v \"^ \\|^#\\|^Interface\\|lo\\|virbr\\|vnet\" | awk '{print $1 \" \" $5 \" \" $9}'"
+#define CMD_NODE_GET_IF_STAT "ifstat | grep -v \"^ \\|^#\\|^Interface\\|lo\\|virbr\\|vnet\" "
+
+// cat /proc/diskstats
+#define CMD_NODE_GET_DISK_STAT "iostat | sed '1,6d' | awk '{print $1 \" \" $3 \" \" $4}' "
+#define CMD_NODE_GET_CPU_MODEL "cat /proc/cpuinfo | grep \"model name\" |sed -n 1p"
+#define CMD_NODE_GET_CPU_CORES "virsh nodeinfo | grep -e \"CPU socket(s)\\|Core(s) per socket\\|Thread(s) per core\" "
+#define CMD_NODE_GET_NETWORK_GATEWAY "ip route | grep default"
+#define CMD_NODE_GET_NETWORK_DNS "cat /etc/resolv.conf | grep ^nameserver | grep -v : "
+
+
+//ls /sys/class/net/ | awk '{print $0}' |grep -v -e "lo\|vir\|vnet"
+#define CMD_GET_VALID_NET_DEV "ls /sys/class/net/ | awk '{print $0}' |grep -v -e \"lo\\|vir\\|vnet\\|docker\""
+
+// ethtool ens37 | grep -e "Speed:\|Link detected: yes"
+#define CMD_ETH_TOOL "ethtool %s | grep -e \"Speed:\\|Link detected: yes\""
+
+#define CMD_SUFFIX "2>&1; echo \"shell_cmd_result=$?\""
+#define SHELL_CMD_RESULT_STRING "shell_cmd_result="
+#define SHELL_CMD_RESULT_STRING_LEN 17 //todo
+
+
+
+char g_error_string[BUF_MAXLEN] = {0};
+
+static int execShellCommand(char *cmd, char *response);
+
+static int execShellCommand(char *cmd, char *response)
+{
+    int result = -1;
+    int len = 0;
+    FILE *stream;
+    char *ptr = NULL;
+
+    if(NULL == cmd)
+    {
+        VIR_ERROR("input cmd = [NULL]");
+        return result;
+    }
+
+    // VIR_DEBUG("input cmd = [%s]", cmd);
+
+    //切换到root用户执行shell cmd
+    //todo: 如能修改用到的shell指令权限，则无需代码中切换为root执行
+    uid_t uid = getuid();
+    if(setuid(0) == 0)
+    {
+        stream = popen(cmd, "r");
+        if(NULL != stream)
+        {
+            len = fread(response, sizeof(char), BUF_MAXLEN, stream);
+            if(len > 0)//todo: response 中间可能有字符'\0', 待进一步处理
+            {
+                response[len] = '\0';
+                // VIR_DEBUG("virsh rsponse = [%s]", response);
+                int number = 0;
+                ptr = strstr(response, SHELL_CMD_RESULT_STRING);
+                if(ptr &&  sscanf(ptr, SHELL_CMD_RESULT_STRING"%d", &number) == 1)
+                {
+                    result = number;
+                    //VIR_DEBUG("virsh result = [%d]", result);
+
+                    //截掉"virsh result ="，然后去掉尾部换行符'\n'
+                    if(len >= strlen(SHELL_CMD_RESULT_STRING) + 1 + 2)
+                    {
+                        while(*(--ptr) == '\n')
+                        {
+                            *ptr = '\0';
+                        }
+                    }
+                }
+            }
+            pclose(stream);
+        }
+        else
+        {
+            VIR_ERROR("%s", "popen fail");
+            result = -1;
+        }
+
+        //恢复uid, 恢复到只有普通用户的权限
+        if (setuid(uid) != 0)
+        {
+            VIR_WARN("%s", "set uid back to normal error");
+        }
+    }
+    else
+    {
+        VIR_ERROR("%s", "setuid to root fail");
+        result = -1;
+    }
+
+    return result;
+}
+
+
+int
+virExtCapabilitiesGetNodeInfo(virNodeExtInfoPtr nodeinfo)
+{
+
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
+
+    VIR_INFO("+++++++++++++++++++++22\n");
+    if (virStrcpyStatic(nodeinfo->cpu_model, "Intel(R) Core(TM) i7-6700") < 0)
+        return -1;
+
+    return 0;
+}
+
+
+//list
+int virExtCapabilitiesNodeListInterfaces(char** ifnames,  int maxifnames)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char *sub_response_ptr = NULL;
+    int dev_index = 0;
+    char tmp_ifname[IFNAME_MAXLEN] = {0};
+    int tmp_rx_rate = 0,  tmp_tx_rate = 0;
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_IF_STAT" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\nresponse=[%s]", rt, response);
+
+    if(0 == rt)//process response message
+    {
+
+        sub_response_ptr = response;
+
+        while( NULL != sub_response_ptr && '\0' != *sub_response_ptr && dev_index < maxifnames)
+        {
+            VIR_DEBUG("SUCESSFUL: %s", sub_response_ptr);
+
+            //读取 ifname,
+            if( 3 == sscanf(sub_response_ptr, "%15s%*[ ]%*s%*[ ]%*s%*[ ]%*s%*[ ]%d%*[ ]%*s%*[ ]%*s%*[ ]%d", tmp_ifname, &tmp_rx_rate, &tmp_tx_rate))
+            {
+                VIR_INFO("SUCCESSFUL: get %d st %s rx_rate = %d KB/s, tx_rate= %d KB/s", dev_index, tmp_ifname, tmp_rx_rate, tmp_tx_rate);
+
+                ifnames[dev_index] = g_strdup(tmp_ifname);
+
+                VIR_INFO("SUCCESSFUL-2: get %d st %s rx_rate = %d KB/s, tx_rate= %d KB/s", dev_index, ifnames[dev_index], tmp_rx_rate, tmp_tx_rate);
+
+                dev_index ++;
+                rt = dev_index;
+            }
+            else
+            {
+                VIR_ERROR("sscanf ifname, rx_rate or tx_rate error");
+            }
+
+            //下一行信息
+            while('\n' != *sub_response_ptr && '\0' != *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+
+            if('\n' == *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+
+}
+
+
+//ifstat -a -t -d 需事先设定统计参数
+//ifstat -t 2 && ifstat -d 2
+int virExtCapabilitiesNodeGetIfStat(const char* ifname, virNodeExtIfStatPtr node_if_stat)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char *sub_response_ptr = NULL;
+    int dev_index = 0;
+    char tmp_ifname[IFNAME_MAXLEN] = {0};
+    int tmp_rx_rate = 0,  tmp_tx_rate = 0;
+
+    int maxifnames = 4;
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_IF_STAT" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\nresponse=[%s]", rt, response);
+
+    if(0 == rt)//process response message
+    {
+
+        sub_response_ptr = response;
+
+        while( NULL != sub_response_ptr && '\0' != *sub_response_ptr && dev_index < maxifnames)
+        {
+            VIR_DEBUG("SUCESSFUL: %s", sub_response_ptr);
+
+            //读取 ifname, rx_rate 和 tx_rate 值
+            if( 3 == sscanf(sub_response_ptr, "%15s%*[ ]%*s%*[ ]%*s%*[ ]%*s%*[ ]%d%*[ ]%*s%*[ ]%*s%*[ ]%d", tmp_ifname, &tmp_rx_rate, &tmp_tx_rate))
+            {
+                if(!strcmp(ifname, tmp_ifname))
+                {
+                    VIR_INFO("SUCCESSFUL: get %d st %s rx_rate = %d KB/s, tx_rate= %d KB/s", dev_index, tmp_ifname, tmp_rx_rate, tmp_tx_rate);
+
+                    node_if_stat->rx_rate = tmp_rx_rate;
+                    node_if_stat->tx_rate = tmp_tx_rate;
+
+                    return 0;
+                }
+                dev_index ++;
+                rt = dev_index;
+            }
+            else
+            {
+                VIR_ERROR("sscanf ifname, rx_rate or tx_rate error");
+            }
+
+            //下一行信息
+            while('\n' != *sub_response_ptr && '\0' != *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+
+            if('\n' == *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+
+}
+
+int qemuNodeExtGetDiskStat(virNodeExtDiskStatPtr node_disk_stat, int max_dev_number)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char dev[DEV_NAME_MAXLEN] = {0};
+
+    int dev_index = 0;
+    char *sub_response_ptr = NULL;
+
+    char tmp_dev_name[DEV_NAME_MAXLEN] = {0};
+    float tmp_read_rate = 0, tmp_write_rate = 0;
+
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_DISK_STAT" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\nresponse=[%s]", rt, response);
+
+    if(0 == rt)//process response message
+    {
+        sub_response_ptr = response;
+
+        while( NULL != sub_response_ptr && '\0' != *sub_response_ptr && dev_index < max_dev_number)
+        {
+            VIR_DEBUG("SUCESSFUL: %s", sub_response_ptr);
+
+            //读取 dev_name, read_rate 和 write_rate 值
+            if( 3 == sscanf(sub_response_ptr, "%15s %f %f", tmp_dev_name, &tmp_read_rate, &tmp_write_rate))
+            {
+                // VIR_DEBUG("SUCCESSFUL: get %d th dev %s read_rate = %.2f KB/s, write_rate= %.2f KB/s", dev_index, tmp_dev_name, tmp_read_rate, tmp_write_rate);
+
+                tmp_dev_name[DEV_NAME_MAXLEN - 1] = '\0';
+                strncpy(node_disk_stat[dev_index].dev_name, tmp_dev_name, DEV_NAME_MAXLEN );
+                node_disk_stat[dev_index].read_rate = tmp_read_rate * 1000;
+                node_disk_stat[dev_index].write_rate = tmp_write_rate * 1000;
+
+                VIR_INFO("SUCCESSFUL: get %d th dev %s int value read_rate = %d B/s, write_rate= %d B/s",
+                         dev_index, tmp_dev_name, node_disk_stat[dev_index].read_rate, node_disk_stat[dev_index].write_rate);
+                dev_index ++;
+                rt = dev_index;
+            }
+            else
+            {
+                VIR_ERROR("sscanf result: no dev_name, read_rate or write_rate");
+            }
+
+            //下一行信息
+            while('\n' != *sub_response_ptr && '\0' != *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+
+            if('\n' == *sub_response_ptr)
+            {
+                sub_response_ptr++;
+            }
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+}
+
+int qemuNodeExtGetCPUModel(char *model)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char *ptr = NULL;
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_CPU_MODEL" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\nresponse=[%s]", rt, response);
+    if(0 == rt)//process response message
+    {
+        VIR_DEBUG("SUCESSFUL: %s", response);
+        ptr = strstr(response, "model name\t: ");
+        if(ptr && strlen(ptr) > 0)
+        {
+            //获取CPU Model字段值
+            //todo： %ms 定义优化
+            strncpy(model, ptr + strlen("model name\t: "), CPU_MODEL_NAME_MAXLEN - 1);
+            VIR_INFO("SUCCESSFUL: get model = [%s]", model);
+        }
+        else
+        {
+            VIR_ERROR("get read_rate or write_rate error");
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+}
+
+int qemuNodeExtGetNetworkGateway(char *gateway)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char *ptr = NULL;
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_NETWORK_GATEWAY" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\n response=[%s]", rt, response);
+    if(0 == rt)//process response message
+    {
+        VIR_DEBUG("SUCESSFUL: %s", response);
+
+        // 获取gateway
+        if( 1 == sscanf(response, "default via %s", gateway))
+        {
+            VIR_INFO("SUCCESSFUL: get gateway = [%s]", gateway);
+        }
+        else
+        {
+            VIR_ERROR("get gateway error");
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+
+}
+
+int qemuExtnodeGetNetworkDNS(virNodeExtAllDNSPtr node_all_dns)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char tmp_dns[3][IPADDR_MAXLEN] = {0};
+
+    int valid_dns_number = 0;
+    int i = 0;
+
+    char *ptr = NULL;
+
+    snprintf(cmd, sizeof(cmd), CMD_NODE_GET_NETWORK_DNS" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\n response=[%s]", rt, response);
+    if(0 == rt)//process response message
+    {
+        // VIR_INFO("SUCESSFUL: %s", response);
+
+        // 获取 nameserver
+        valid_dns_number = sscanf(response, "nameserver %s\nnameserver %s\nnameserver %s", tmp_dns[0], tmp_dns[1], tmp_dns[2]);
+        VIR_INFO("valid_dns_number=[%d]", valid_dns_number);
+        if(valid_dns_number > 0 )
+        {
+            node_all_dns->valid_number = valid_dns_number;
+            for(i = 0; i< valid_dns_number; i++)
+            {
+                strncpy(node_all_dns->dns[i], tmp_dns[i], IPADDR_MAXLEN - 1);
+                VIR_INFO("SUCCESSFUL: get dns[%d] = [%s]", i, tmp_dns[i]);
+            }
+        }
+        else
+        {
+            VIR_ERROR("get dns error");
+        }
+    }
+    else
+    {
+        strncpy(g_error_string, response, BUF_MAXLEN - 1);
+        VIR_ERROR("virsh response: [%s]", g_error_string);
+        rt = -1;
+    }
+    return rt;
+}
+
+int qemuExtnodeGetNetworkLinkSpeed(virNodeExtIFLinkSpeedPtr node_if_link_speed, int maxifnames)
+{
+    int rt = -1;
+    char cmd[CMD_MAX_LEN] = {0};
+    char response[BUF_MAXLEN] = {0};
+    char *sub_response_ptr = NULL;
+
+    int dev_index = -1;
+    char tmp_ifname[IFNAME_MAXLEN] = {0};
+    int tmp_linkspeed = 0;
+    int real_if_number = 0;
+
+    //首先获取有效的网络设备名字 ls /sys/class/net/ ，过滤掉lo vir vnet docker开头的网络接口
+    snprintf(cmd, sizeof(cmd), CMD_GET_VALID_NET_DEV" %s", CMD_SUFFIX);
+    VIR_DEBUG("cmd=%s", cmd);
+
+    rt = execShellCommand(cmd, response);
+    VIR_DEBUG("rt=[%d]\n response=[%s]", rt, response);
+
+    if(rt < 0)
+    {
+        strncpy(g_error_string, "get net dev error", BUF_MAXLEN - 1);
+        VIR_ERROR("get net dev error");
+        rt = -1;
+        return rt;
+    }
+
+    sub_response_ptr = response;
+    while( NULL != sub_response_ptr && '\0' != *sub_response_ptr && dev_index < maxifnames)
+    {
+        //获取 ifname
+        if( 1 == sscanf(sub_response_ptr, "%15s", tmp_ifname))
+        {
+            dev_index ++;
+
+            VIR_DEBUG("SUCCESSFUL: get %dth if %s", dev_index, tmp_ifname);
+
+            strncpy(node_if_link_speed[dev_index].ifname, tmp_ifname, IFNAME_MAXLEN);
+            node_if_link_speed[dev_index].linkspeed = 0; //初始化为0
+        }
+        else
+        {
+            VIR_ERROR("sscanf ifname error");
+        }
+
+        //转到下一行
+        while('\n' != *sub_response_ptr && '\0' != *sub_response_ptr)
+        {
+            sub_response_ptr++;
+        }
+
+        if('\n' == *sub_response_ptr)
+        {
+            sub_response_ptr++;
+        }
+    }
+
+    real_if_number = dev_index + 1;
+
+
+    //ethtool 获取有效设备的linkspeed
+    for(dev_index = 0; dev_index < real_if_number; dev_index++)
+    {
+        memset(cmd, 0, sizeof(cmd));
+        memset(response, 0, sizeof(response));
+
+        snprintf(cmd, sizeof(cmd), CMD_ETH_TOOL" %s", tmp_ifname, CMD_SUFFIX);
+        VIR_DEBUG("cmd=[%s]", cmd);
+
+        rt = execShellCommand(cmd, response);
+        VIR_DEBUG("rt=[%d], response=[%s]", rt, response);
+        if(rt == 0)
+        {
+            //获取 linkspeed
+            if( 1 == sscanf(response, "\tSpeed: %dMb/s\n\tLink detected: yes", &tmp_linkspeed))
+            {
+                VIR_INFO("SUCCESSFUL: get if %s linkspeed: %d Mb/s", node_if_link_speed[dev_index].ifname, tmp_linkspeed);
+                node_if_link_speed[dev_index].linkspeed = tmp_linkspeed;
+            }
+        }
+
+    }
+
+    return real_if_number;
 }

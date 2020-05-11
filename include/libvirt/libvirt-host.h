@@ -188,7 +188,6 @@ struct _virNodeExtInfo {
 };
 
 
-
 /**
  * VIR_NODE_CPU_STATS_FIELD_LENGTH:
  *
@@ -849,6 +848,95 @@ int virNodeAllocPages(virConnectPtr conn,
                       int startCell,
                       unsigned int cellCount,
                       unsigned int flags);
+
+
+
+#define COMMON_SMALL_LEN 16
+#define COMMON_MIDDLE_LEN 64
+#define COMMON_BIG_LEN 128
+
+#define BUF_MAXLEN 1024
+#define IFNAME_MAXLEN 16
+#define DEV_NAME_MAXLEN 16
+#define CPU_MODEL_NAME_MAXLEN 64
+#define IPADDR_MAXLEN 64
+
+#define SPICE_PORT_MIN 5900
+#define SPICE_PORT_MAX 65535
+
+#define DNS_MAX_NUM 4
+
+/**
+ * virNodeExtIfStatPtr: 扩展信息
+ *
+ * a virNodeExtIfStatPtr is a pointer to a s_NodeIFStat structure.
+ */
+struct _virNodeExtIfStat
+{
+    // char ifname[IFNAME_MAXLEN];
+    int rx_rate;
+    int tx_rate;
+};
+typedef struct _virNodeExtIfStat virNodeExtIfStat;
+typedef virNodeExtIfStat *virNodeExtIfStatPtr;
+
+
+/**
+ * virNodeExtDiskStatPtr: 扩展信息
+ *
+ * a virNodeExtDiskStatPtr is a pointer to a _virNodeExtDiskStat structure.
+ */
+struct _virNodeExtDiskStat
+{
+    char dev_name[DEV_NAME_MAXLEN];
+    int read_rate;
+    int write_rate;
+
+};
+typedef struct _virNodeExtDiskStat virNodeExtDiskStat;
+typedef virNodeExtDiskStat *virNodeExtDiskStatPtr;
+
+
+/**
+ * virNodeExtAllDNSPtr: 扩展信息
+ *
+ * a virNodeExtAllDNSPtr is a pointer to a _virNodeExtAllDNS structure.
+ */
+struct _virNodeExtAllDNS
+{
+    int valid_number;
+    // char *dns[3];
+    char dns[3][IPADDR_MAXLEN];
+
+};
+typedef struct _virNodeExtAllDNS virNodeExtAllDNS;
+typedef virNodeExtAllDNS *virNodeExtAllDNSPtr;
+
+
+/**
+ * virNodeExtIFLinkSpeedPtr: 扩展信息
+ *
+ * a virNodeExtIFLinkSpeedPtr is a pointer to a _virNodeExtIFLinkSpeed structure.
+ */
+struct _virNodeExtIFLinkSpeed
+{
+    char ifname[IFNAME_MAXLEN];
+    int linkspeed;
+
+};
+typedef struct _virNodeExtIFLinkSpeed virNodeExtIFLinkSpeed;
+typedef virNodeExtIFLinkSpeed *virNodeExtIFLinkSpeedPtr;
+
+
+int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifnames);
+
+int virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr node_if_stat);
+
+int virNodeExtGetDiskStat(virConnectPtr conn, virNodeExtDiskStatPtr node_disk_stat, int max_dev_number);
+
+int virNodeExtGetNetworkGateway(virConnectPtr conn, char *gateway);
+int virNodeExtGetNetworkDNS(virConnectPtr conn, virNodeExtAllDNSPtr node_all_dns);
+int virNodeExtGetNetworkLinkSpeed(virConnectPtr conn, virNodeExtIFLinkSpeedPtr node_if_link_speed, int maxifnames);
 
 
 #endif /* LIBVIRT_HOST_H */
