@@ -1750,6 +1750,7 @@ virNodeAllocPages(virConnectPtr conn,
 }
 
 
+
 /*
  * virNodeGetSEVInfo:
  * @conn: pointer to the hypervisor connection
@@ -1799,22 +1800,75 @@ virNodeGetSEVInfo(virConnectPtr conn,
 }
 
 
+
+/**
+ * virNodeExtListInterfaces:
+ * @conn: pointer to the hypervisor connection
+ * @ifnames: array to collect the list of names of host interfaces
+ * @maxifnames: size of @ifnames
+ *
+ * Collect the list of active physical host interfaces,
+ * and store their names in @ifnames
+ *
+ * Returns the number of interfaces found or -1 in case of error.  Note that
+ * this command is inherently racy; a interface can be started between a call
+ * to virConnectNumOfInterfaces() and this call; you are only guaranteed that
+ * all currently active interfaces were listed if the return is less than
+ * @maxifnames. The client must call free() on each returned name.
+ */
+int virNodeExtListInterfaces (virConnectPtr conn,
+                                char ** ifnames,
+                                int maxifnames)
+{
+    VIR_DEBUG("conn=%p, ifnames=%p", conn, ifnames);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArrayArgGoto(ifnames, maxifnames, error);
+    virCheckNonNegativeArgGoto(maxifnames, error);
+
+    if (conn->driver->nodeExtListInterfaces) {
+        int ret;
+        ret = conn->driver->nodeExtListInterfaces(conn, ifnames, maxifnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+    error:
+    virDispatchError(conn);
+    return -1;
+
+}
+
 /**
 * virNodeExtGetIfStat:
 * @conn: pointer to the hypervisor connection
-* @node_if_stat: pointer to a NodeIFStat structure allocated by the user
-        *
-        * Extract hardware information about the node.
+* @ifname: the interface name
+* @node_if_stat: host network interface stats (returned)
 *
-* Use of this API is strongly discouraged as the information provided
-        * is not guaranteed to be accurate on all hardware platforms.
-*
-* return verbose cpu model
-*
-* Returns 0 in case of success and -1 in case of failure.
-*/
+ * This function returns network interface stats for host interfaces
+ *
+ * The @ifname parameter is the network interface either by name
+ *
+ * Host may have more than one network interface.  To get stats for
+ * each you should make multiple calls to this function.
+ *
+ * Individual fields within the stats structure may be returned
+ * as -1, which indicates that the host does not support
+ * that particular statistic.
+ *
+ * The returned stats are from host's point of view.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
 int
-virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr node_if_stat)
+virNodeExtGetIfStat (virConnectPtr conn,
+                    const char *ifname,
+                    virNodeExtIfStatPtr node_if_stat)
 {
     VIR_DEBUG("conn=%p, node_if_stat=%p", conn, node_if_stat);
 
@@ -1822,6 +1876,7 @@ virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(ifname, error);
     virCheckNonNullArgGoto(node_if_stat, error);
 
     if (conn->driver->nodeExtGetIfStat) {
@@ -1839,19 +1894,38 @@ virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr
     return -1;
 }
 
-int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifnames)
+
+
+/**
+ * virNodeExtListDisks:
+ * @conn: pointer to the hypervisor connection
+ * @names: array to collect the list of names of host interfaces
+ * @maxnames: size of @names
+ *
+ * Collect the list of active physical host interfaces,
+ * and store their names in @names
+ *
+ * Returns the number of interfaces found or -1 in case of error.  Note that
+ * this command is inherently racy; a interface can be started between a call
+ * to virConnectNumOfInterfaces() and this call; you are only guaranteed that
+ * all currently active interfaces were listed if the return is less than
+ * @maxnames. The client must call free() on each returned name.
+ */
+int virNodeExtListDisks (virConnectPtr conn,
+                              char ** names,
+                              int maxnames)
 {
-    VIR_DEBUG("conn=%p, ifnames=%p", conn, ifnames);
+    VIR_DEBUG("conn=%p, names=%p", conn, names);
 
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(ifnames, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
+    virCheckNonNegativeArgGoto(maxnames, error);
 
-
-    if (conn->driver->nodeExtListInterfaces) {
+    if (conn->driver->nodeExtListDisks) {
         int ret;
-        ret = conn->driver->nodeExtListInterfaces(conn, ifnames, maxifnames);
+        ret = conn->driver->nodeExtListDisks(conn, names, maxnames);
         if (ret < 0)
             goto error;
         return ret;
@@ -1859,7 +1933,100 @@ int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifname
 
     virReportUnsupportedError();
 
-error:
+    error:
+    virDispatchError(conn);
+    return -1;
+
+}
+
+/**
+* virNodeExtGetDiskStat:
+* @conn: pointer to the hypervisor connection
+* @name: the interface name
+* @stat: host network interface stats (returned)
+*
+ * This function returns network interface stats for host interfaces
+ *
+ * The @name parameter is the network interface either by name
+ *
+ * Host may have more than one network interface.  To get stats for
+ * each you should make multiple calls to this function.
+ *
+ * Individual fields within the stats structure may be returned
+ * as -1, which indicates that the host does not support
+ * that particular statistic.
+ *
+ * The returned stats are from host's point of view.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+int
+virNodeExtGetDiskStat (virConnectPtr conn,
+                        const char *name,
+                        virNodeExtDiskStatPtr stat)
+{
+    VIR_DEBUG("conn=%p, stat=%p", conn, stat);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(name, error);
+    virCheckNonNullArgGoto(stat, error);
+
+
+    if (conn->driver->nodeExtGetDiskStat) {
+        int ret;
+        ret = conn->driver->nodeExtGetDiskStat(conn, name, stat);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+    error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virNodeExtListDNS:
+ * @conn: pointer to the hypervisor connection
+ * @names: array to collect the list of names of host DNSs
+ * @maxnames: size of @names
+ *
+ * Collect the list of active physical host DNSs,
+ * and store their names in @names
+ *
+ * Returns the number of interfaces found or -1 in case of error. you are only guaranteed that
+ * all currently host DNSs were listed if the return is less than
+ * @maxnames. The client must call free() on each returned name.
+ */
+int virNodeExtListDNS (virConnectPtr conn,
+                         char ** names,
+                         int maxnames)
+{
+    VIR_DEBUG("conn=%p, names=%p", conn, names);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
+    virCheckNonNegativeArgGoto(maxnames, error);
+
+
+    if (conn->driver->nodeExtListDNS) {
+        int ret;
+        ret = conn->driver->nodeExtListDNS(conn, names, maxnames);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+    error:
     virDispatchError(conn);
     return -1;
 

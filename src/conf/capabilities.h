@@ -351,3 +351,11 @@ int virExtCapabilitiesNodeListInterfaces(char **ifnames, int maxifnames);
 
 int virExtCapabilitiesNodeGetIfStat(const char * ifname, virNodeExtIfStatPtr node_if_stat);
 
+
+int virExtCapabilitiesNodeListDisks(char** names,  int maxnames);
+
+int virExtCapabilitiesNodeGetDiskStat(const char* name, virNodeExtDiskStatPtr stat);
+
+
+int virExtCapabilitiesNodeDNS(char** names,  int maxnames);
+

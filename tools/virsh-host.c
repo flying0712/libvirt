@@ -790,6 +790,127 @@ cmdNodeExtGetIfStat(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
 
 /*
+ * "nodedisklist" command
+ */
+static const vshCmdInfo info_nodedisklist[] = {
+        {.name = "help",
+                .data = N_("node disk list")
+        },
+        {.name = "desc",
+                .data = N_("Returns node disk list.")
+        },
+        {.name = NULL}
+};
+
+static bool
+cmdNodeExtDiskList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControlPtr priv = ctl->privData;
+
+    int realIfNum = 0;
+    int i = 0;
+
+    char * disk_names[4] = {0};
+    realIfNum = virNodeExtListDisks(priv->conn, disk_names, 4);
+
+    if ( realIfNum < 0) {
+
+        vshError(ctl, "%s", _("failed to get node if list"));
+        return false;
+    }
+    for (i = 0; i < realIfNum; i++)
+    {
+        vshPrint(ctl, "%-20s %d-%s\n", _("disk: "), i, disk_names[i]);
+    }
+
+    return true;
+}
+
+
+/*
+ * "nodegetdiskstat" command
+ */
+static const vshCmdInfo info_nodegetdiskstat[] = {
+        {.name = "help",
+                .data = N_("node disk stat")
+        },
+        {.name = "desc",
+                .data = N_("Returns node stat.")
+        },
+        {.name = NULL}
+};
+
+static bool
+cmdNodeExtGetDiskStat(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControlPtr priv = ctl->privData;
+
+    virNodeExtDiskStat node_disk_stat;
+    int realIfNum = 0;
+    int i = 0;
+
+    char *disk_names[4] = {0};
+    realIfNum = virNodeExtListDisks(priv->conn, disk_names, 4);
+
+    if ( realIfNum < 0) {
+
+        vshError(ctl, "%s", _("failed to get node disk list"));
+        return false;
+    }
+    for (i = 0; i < realIfNum; i++)
+    {
+        vshPrint(ctl, "%-20s %d-%s\n", _("disk: "), i, disk_names[i]);
+
+    }
+
+    for (i = 0; i < realIfNum; i++)
+    {
+        virNodeExtGetDiskStat(priv->conn, disk_names[i], &node_disk_stat);
+        vshPrint(ctl, "%-20s %d-%s: %d %d\n", _("disk: "), i, disk_names[i], node_disk_stat.read_rate, node_disk_stat.write_rate);
+    }
+
+    return true;
+}
+
+
+/*
+ * "nodednslist" command
+ */
+static const vshCmdInfo info_nodednslist[] = {
+        {.name = "help",
+                .data = N_("node DNS list")
+        },
+        {.name = "desc",
+                .data = N_("Returns node DNS list.")
+        },
+        {.name = NULL}
+};
+
+static bool
+cmdNodeExtDNSList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControlPtr priv = ctl->privData;
+
+    int realIfNum = 0;
+    int i = 0;
+
+    char * dns_servers[4] = {0};
+    realIfNum = virNodeExtListDNS(priv->conn, dns_servers, 4);
+
+    if ( realIfNum < 0) {
+
+        vshError(ctl, "%s", _("failed to get node dns list"));
+        return false;
+    }
+    for (i = 0; i < realIfNum; i++)
+    {
+        vshPrint(ctl, "%-20s %d-%s\n", _("DNS: "), i, dns_servers[i]);
+    }
+
+    return true;
+}
+
+/*
  * "nodecpumap" command
  */
 static const vshCmdInfo info_node_cpumap[] = {
@@ -2026,6 +2147,24 @@ const vshCmdDef hostAndHypervisorCmds[] = {
             .handler = cmdNodeExtGetIfStat,
             .opts = NULL,
             .info = info_nodegetifstat,
+            .flags = 0
+    },
+    {.name = "nodedisklist",
+            .handler = cmdNodeExtDiskList,
+            .opts = NULL,
+            .info = info_nodedisklist,
+            .flags = 0
+    },
+    {.name = "nodegetdiskstat",
+            .handler = cmdNodeExtGetDiskStat,
+            .opts = NULL,
+            .info = info_nodegetdiskstat,
+            .flags = 0
+    },
+    {.name = "nodednslist",
+            .handler = cmdNodeExtDNSList,
+            .opts = NULL,
+            .info = info_nodednslist,
             .flags = 0
     },
     {.name = "nodememstats",

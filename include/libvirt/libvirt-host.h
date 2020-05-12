@@ -932,11 +932,15 @@ int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifname
 
 int virNodeExtGetIfStat (virConnectPtr conn, const char *ifname, virNodeExtIfStatPtr node_if_stat);
 
-int virNodeExtGetDiskStat(virConnectPtr conn, virNodeExtDiskStatPtr node_disk_stat, int max_dev_number);
+int virNodeExtListDisks (virConnectPtr conn, char ** names, int maxnames);
 
-int virNodeExtGetNetworkGateway(virConnectPtr conn, char *gateway);
-int virNodeExtGetNetworkDNS(virConnectPtr conn, virNodeExtAllDNSPtr node_all_dns);
-int virNodeExtGetNetworkLinkSpeed(virConnectPtr conn, virNodeExtIFLinkSpeedPtr node_if_link_speed, int maxifnames);
+int virNodeExtGetDiskStat(virConnectPtr conn, const char *name, virNodeExtDiskStatPtr stat);
+
+int virNodeExtListDNS(virConnectPtr conn, char ** names, int maxnames);
+
+// int virNodeExtGetNetworkGateway(virConnectPtr conn, char *gateway);
+// int virNodeExtGetNetworkDNS(virConnectPtr conn, virNodeExtAllDNSPtr node_all_dns);
+// int virNodeExtGetNetworkLinkSpeed(virConnectPtr conn, virNodeExtIFLinkSpeedPtr node_if_link_speed, int maxifnames);
 
 
 #endif /* LIBVIRT_HOST_H */

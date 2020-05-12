@@ -1391,15 +1391,31 @@ typedef char *
 (*virDrvDomainBackupGetXMLDesc)(virDomainPtr domain,
                                 unsigned int flags);
 								
-typedef int
-(*virDrvNodeExtGetIfStat)(virConnectPtr conn,
-                        const char * ifname,
-                        virNodeExtIfStatPtr node_if_stat);
 
 typedef int
 (*virDrvNodeExtListInterfaces)(virConnectPtr conn,
                                char ** ifnames,
                                 int maxifnames);
+typedef int
+(*virDrvNodeExtGetIfStat)(virConnectPtr conn,
+                          const char * ifname,
+                          virNodeExtIfStatPtr node_if_stat);
+
+
+typedef int
+(*virDrvNodeExtListDisks)(virConnectPtr conn,
+                               char ** names,
+                               int maxnames);
+typedef int
+(*virDrvNodeExtGetDiskStat)(virConnectPtr conn,
+                          const char * name,
+                            virNodeExtDiskStatPtr stat);
+
+typedef int
+(*virDrvNodeExtListDNS)(virConnectPtr conn,
+                          char ** names,
+                          int maxnames);
+
 
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
@@ -1667,4 +1683,7 @@ struct _virHypervisorDriver {
     virDrvDomainBackupGetXMLDesc domainBackupGetXMLDesc;
     virDrvNodeExtListInterfaces nodeExtListInterfaces;
     virDrvNodeExtGetIfStat nodeExtGetIfStat;
+    virDrvNodeExtListDisks nodeExtListDisks;
+    virDrvNodeExtGetDiskStat nodeExtGetDiskStat;
+    virDrvNodeExtListDNS nodeExtListDNS;
 };

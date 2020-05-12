@@ -23159,7 +23159,7 @@ qemuNodeExtGetInfo(virConnectPtr conn,
     VIR_INFO("+++++++++++++++TEST begin\n");
 
     VIR_INFO("+++++++++++++++END\n");
-    return virExtCapabilitiesGetNodeInfo(nodeinfo->cpu_model);
+    return virExtCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 
@@ -23189,27 +23189,98 @@ qemuNodeExtListInterfaces(virConnectPtr conn, char ** ifnames, int maxifnames)
 
 }
 
-
-static int 
-qemuNodeExtGetIfStat(virConnectPtr conn, const char * ifname, virNodeExtIfStatPtr node_if_stat)
+static int
+qemuNodeExtGetIfStat(virConnectPtr conn, const char * name, virNodeExtIfStatPtr node_if_stat)
 {
 
     if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
         return -1;
-		
+
 
     VIR_INFO("+++++++++++++++ begin\n");
 
-    int i = 0;
     int realIFNumber = 0;
-    virExtCapabilitiesNodeGetIfStat(ifname, node_if_stat);
+    virExtCapabilitiesNodeGetIfStat(name, node_if_stat);
 
-    VIR_INFO("ifname | rx_rat | tx_rate: %s | %d | %d \n", ifname, node_if_stat->rx_rate, node_if_stat->tx_rate);
+    VIR_INFO("ifname | rx_rat | tx_rate: %s | %d | %d \n", name, node_if_stat->rx_rate, node_if_stat->tx_rate);
 
     VIR_INFO("+++++++++++++++ end\n");
     return realIFNumber;
 
 }
+
+static int
+qemuNodeExtListDisks(virConnectPtr conn, char ** names, int maxnames)
+{
+
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+    VIR_INFO("+++++++++++++++ begin\n");
+
+    int i = 0;
+    int realIFNumber = 0;
+
+    realIFNumber = virExtCapabilitiesNodeListDisks(names, maxnames);
+    for(i = 0; i < realIFNumber; i ++)
+    {
+        VIR_INFO("dev-name-%d: %s",i, names[i]);
+    }
+
+    // strncpy(ifnames[i], nodeIfStat[i].ifname, 16);
+
+    VIR_INFO("+++++++++++++++ end\n");
+    return realIFNumber;
+
+}
+
+
+static int
+qemuNodeExtGetDiskStat(virConnectPtr conn, const char * name, virNodeExtDiskStatPtr stat)
+{
+
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+    VIR_INFO("+++++++++++++++ begin\n");
+
+    int realIFNumber = 0;
+    virExtCapabilitiesNodeGetDiskStat(name, stat);
+
+    VIR_INFO("devname | read_rate | write_rate: %s | %d | %d \n", name, stat->read_rate, stat->write_rate);
+
+    VIR_INFO("+++++++++++++++ end\n");
+    return realIFNumber;
+
+}
+
+
+static int
+qemuNodeExtListDNS(virConnectPtr conn, char ** names, int maxnames)
+{
+
+    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+        return -1;
+
+    VIR_INFO("+++++++++++++++ begin\n");
+
+    int i = 0;
+    int realIFNumber = 0;
+
+    realIFNumber = virExtCapabilitiesNodeDNS(names, maxnames);
+    for(i = 0; i < realIFNumber; i ++)
+    {
+        VIR_INFO("dns-%d: %s",i, names[i]);
+    }
+
+    // strncpy(ifnames[i], nodeIfStat[i].ifname, 16);
+
+    VIR_INFO("+++++++++++++++ end\n");
+    return realIFNumber;
+
+}
+
+
 
 
 static virHypervisorDriver qemuHypervisorDriver = {
@@ -23455,6 +23526,11 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .nodeExtGetInfo = qemuNodeExtGetInfo, /* 0.2.0 */
 	.nodeExtGetIfStat = qemuNodeExtGetIfStat, /* 6.2.0 */
 	.nodeExtListInterfaces = qemuNodeExtListInterfaces, /* 6.2.0 */
+    .nodeExtListDisks = qemuNodeExtListDisks, /* 6.2.0 */
+    .nodeExtGetDiskStat = qemuNodeExtGetDiskStat, /* 6.2.0 */
+    .nodeExtListDNS = qemuNodeExtListDNS, /* 6.2.0 */
+
+
 };
 
 

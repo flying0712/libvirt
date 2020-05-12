@@ -3156,8 +3156,40 @@ struct remote_node_ext_get_if_stat_args {
 };
 
 struct remote_node_ext_get_if_stat_ret {
-    int64_t rx_rate;
-    int64_t tx_rate;
+    int rx_rate;
+    int tx_rate;
+};
+
+struct remote_node_ext_list_disks_args {
+    int maxnames;
+};
+
+struct remote_node_ext_list_disks_ret {
+        struct {
+             u_int              names_len;
+             remote_nonnull_string * names_val;
+         } names;
+};
+
+struct remote_node_ext_get_disk_stat_args {
+    remote_nonnull_string diskname;
+};
+
+struct remote_node_ext_get_disk_stat_ret {
+    char dev_name[16];
+    int read_rate;
+    int write_rate;
+};
+
+struct remote_node_ext_list_d_n_s_args {
+    int maxnames;
+};
+
+struct remote_node_ext_list_d_n_s_ret {
+        struct {
+             u_int              names_len;
+             remote_nonnull_string * names_val;
+         } names;
 };
 
 enum remote_procedure {
@@ -3585,5 +3617,8 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422,
         REMOTE_PROC_NODE_EXT_GET_INFO = 423,
         REMOTE_PROC_NODE_EXT_LIST_INTERFACES = 424,
-        REMOTE_PROC_NODE_EXT_GET_IF_STAT = 425
+        REMOTE_PROC_NODE_EXT_GET_IF_STAT = 425,
+        REMOTE_PROC_NODE_EXT_LIST_DISKS = 426,
+        EMOTE_PROC_NODE_EXT_GET_DISK_STAT = 427,
+        REMOTE_PROC_NODE_EXT_LIST_D_N_S = 428,
 };

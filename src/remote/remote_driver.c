@@ -8685,8 +8685,13 @@ static virHypervisorDriver hypervisor_driver = {
     .domainAgentSetResponseTimeout = remoteDomainAgentSetResponseTimeout, /* 5.10.0 */
     .domainBackupBegin = remoteDomainBackupBegin, /* 6.0.0 */
     .domainBackupGetXMLDesc = remoteDomainBackupGetXMLDesc, /* 6.0.0 */
+
     .nodeExtListInterfaces = remoteNodeExtListInterfaces, /* 6.2.0 */
     .nodeExtGetIfStat = remoteNodeExtGetIfStat, /* 6.2.0 */
+    .nodeExtListDisks = remoteNodeExtListDisks, /* 6.2.0 */
+    .nodeExtGetDiskStat = remoteNodeExtGetDiskStat, /* 6.2.0 */
+    .nodeExtListDNS = remoteNodeExtListDNS, /* 6.2.0 */
+
 };
 
 static virNetworkDriver network_driver = {

@@ -874,6 +874,10 @@ LIBVIRT_6.0.0 {
         virNodeExtGetInfo;
 		virNodeExtListInterfaces;
         virNodeExtGetIfStat;
+        virNodeExtListDisks;
+        virNodeExtGetDiskStat;
+        virNodeExtListDNS;
+
 } LIBVIRT_5.10.0;
 
 

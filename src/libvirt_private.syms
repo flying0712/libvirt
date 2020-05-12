@@ -82,6 +82,9 @@ virCapabilitiesSetNetPrefix;
 virExtCapabilitiesGetNodeInfo;
 virExtCapabilitiesNodeGetIfStat;
 virExtCapabilitiesNodeListInterfaces;
+virExtCapabilitiesNodeListDisks;
+virExtCapabilitiesNodeGetDiskStat;
+virExtCapabilitiesNodeDNS;
 
 
 # conf/checkpoint_conf.h
