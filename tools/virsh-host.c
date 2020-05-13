@@ -782,7 +782,11 @@ cmdNodeExtGetIfStat(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     for (i = 0; i < realIfNum; i++)
     {
         virNodeExtGetIfStat(priv->conn, ifnames[i], &node_if_stat);
-        vshPrint(ctl, "%-20s %d-%s: %d %d\n", _("if: "), i, ifnames[i], node_if_stat.rx_rate, node_if_stat.tx_rate);
+        vshPrint(ctl, "%-20s %d-%s: rx: %dKB/s, tx: %dKB/s, ip:%s, gw: %s, state: %d, linkspeed: %dMbps\n",
+                _("if: "), i, ifnames[i],
+                node_if_stat.rx_rate, node_if_stat.tx_rate,
+                node_if_stat.ipaddr, node_if_stat.gateway,
+                node_if_stat.state, node_if_stat.linkspeed);
     }
 
     return true;

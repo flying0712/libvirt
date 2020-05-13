@@ -873,9 +873,15 @@ int virNodeAllocPages(virConnectPtr conn,
  */
 struct _virNodeExtIfStat
 {
-    // char ifname[IFNAME_MAXLEN];
+    char ifname[IFNAME_MAXLEN];
+    char ipaddr[64];
+    char gateway[64];
+
     int rx_rate;
     int tx_rate;
+
+    int state;
+    int linkspeed;
 };
 typedef struct _virNodeExtIfStat virNodeExtIfStat;
 typedef virNodeExtIfStat *virNodeExtIfStatPtr;

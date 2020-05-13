@@ -2049,8 +2049,17 @@ virCapabilitiesHostInitIOMMU(virCapsPtr caps)
 //ls /sys/class/net/ | awk '{print $0}' |grep -v -e "lo\|vir\|vnet"
 #define CMD_GET_VALID_NET_DEV "ls /sys/class/net/ | awk '{print $0}' |grep -v -e \"lo\\|vir\\|vnet\\|docker\""
 
+//获取指定网卡gateway
+#define CMD_NODE_GET_NETWORK_GATEWAY_DEV "ip route | grep default |grep %s | awk '{print $3}'"
+
+//获取指定网卡ipaddr
+#define CMD_NODE_GET_NETWORK_IPADDR_DEV "ifconfig %s | grep inet |sed -n '1p' | awk '{print $2}'"
+
+//ls /sys/class/net/ | awk '{print $0}' |grep -v -e "lo\|vir\|vnet"
+#define CMD_GET_VALID_NET_DEV "ls /sys/class/net/ | awk '{print $0}' |grep -v -e \"lo\\|vir\\|vnet\\|docker\""
+
 // ethtool ens37 | grep -e "Speed:\|Link detected: yes"
-#define CMD_ETH_TOOL "ethtool %s | grep -e \"Speed:\\|Link detected: yes\""
+#define CMD_ETH_TOOL "ethtool %s | grep -e \"Speed:\\|Link detected:\""
 
 #define CMD_SUFFIX "2>&1; echo \"shell_cmd_result=$?\""
 #define SHELL_CMD_RESULT_STRING "shell_cmd_result="
@@ -2222,14 +2231,19 @@ int virExtCapabilitiesNodeGetIfStat(const char* ifname, virNodeExtIfStatPtr node
     int dev_index = 0;
     char tmp_ifname[IFNAME_MAXLEN] = {0};
     int tmp_rx_rate = 0,  tmp_tx_rate = 0;
+    int tmp_linkspeed = 0;
 
     int maxifnames = 4;
+
+    char cmd2[CMD_MAX_LEN] = {0};
+    char response2[BUF_MAXLEN] = {0};
 
     snprintf(cmd, sizeof(cmd), CMD_NODE_GET_IF_STAT" %s", CMD_SUFFIX);
     VIR_DEBUG("cmd=%s", cmd);
 
     rt = execShellCommand(cmd, response);
     VIR_DEBUG("rt=[%d]\nresponse=[%s]", rt, response);
+
 
     if(0 == rt)//process response message
     {
@@ -2249,6 +2263,52 @@ int virExtCapabilitiesNodeGetIfStat(const char* ifname, virNodeExtIfStatPtr node
 
                     node_if_stat->rx_rate = tmp_rx_rate;
                     node_if_stat->tx_rate = tmp_tx_rate;
+
+                    virStrncpy(node_if_stat->ifname, ifname, 16, 16);
+                    strncpy(node_if_stat->ipaddr, "0.0.0.0", 64);
+                    virStrncpy(node_if_stat->gateway, "0.0.0.0", 64, 64);
+
+                    snprintf(cmd2, sizeof(cmd2), CMD_ETH_TOOL" %s", ifname, CMD_SUFFIX);
+                    VIR_INFO("cmd=%s", cmd2);
+
+                    rt = execShellCommand(cmd2, response2);
+                    VIR_INFO("rt=[%d]\nresponse2=[%s]", rt, response2);
+                    if(rt == 0)
+                    {
+                        //获取 linkspeed
+                        if( 1 == sscanf(response2, "\tSpeed: %dMb/s", &tmp_linkspeed))
+                        {
+                            node_if_stat->linkspeed = tmp_linkspeed;
+                            VIR_INFO("SUCCESSFUL: get if %s linkspeed: %d Mb/s", ifname, node_if_stat->linkspeed);
+                        }
+
+                        node_if_stat->state = 0;
+                        //获取 state
+                        if( strstr(response2, "Link detected: yes"))
+                        {
+                            node_if_stat->state = 1;
+                        }
+                        VIR_INFO("state = %d\n", node_if_stat->state);
+                    }
+
+                    snprintf(cmd2, sizeof(cmd2), CMD_NODE_GET_NETWORK_GATEWAY_DEV" %s", tmp_ifname, CMD_SUFFIX);
+                    VIR_DEBUG("cmd2=[%s]", cmd2);
+                    rt = execShellCommand(cmd2, response2);
+                    VIR_DEBUG("rt=[%d], response2=[%s]", rt, response2);
+                    if(rt == 0)
+                    {
+                        sscanf(response2, "%s", node_if_stat->gateway);
+                        VIR_INFO("gateway: %s", node_if_stat->gateway);
+                    }
+
+                    snprintf(cmd2, sizeof(cmd2), CMD_NODE_GET_NETWORK_IPADDR_DEV" %s", tmp_ifname, CMD_SUFFIX);
+                    rt = execShellCommand(cmd2, response2);
+                    VIR_DEBUG("rt=[%d], response2=[%s]", rt, response2);
+                    if(rt == 0)
+                    {
+                        sscanf(response2, "%s", node_if_stat->ipaddr);
+                        VIR_INFO("gateway: %s", node_if_stat->ipaddr);
+                    }
 
                     return 0;
                 }

@@ -3156,8 +3156,13 @@ struct remote_node_ext_get_if_stat_args {
 };
 
 struct remote_node_ext_get_if_stat_ret {
+    char ifname[16];
+    char ipaddr[64];
+    char gateway[64];
     int rx_rate;
     int tx_rate;
+    int state;
+    int linkspeed;
 };
 
 struct remote_node_ext_list_disks_args {
