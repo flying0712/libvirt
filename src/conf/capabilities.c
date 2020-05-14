@@ -2264,7 +2264,8 @@ int virExtCapabilitiesNodeGetIfStat(const char* ifname, virNodeExtIfStatPtr node
                     node_if_stat->rx_rate = tmp_rx_rate;
                     node_if_stat->tx_rate = tmp_tx_rate;
 
-                    virStrncpy(node_if_stat->ifname, ifname, 16, 16);
+                    memset(node_if_stat->ifname, 0, sizeof(node_if_stat->ifname));
+                    strncpy(node_if_stat->ifname, tmp_ifname, 16);
                     strncpy(node_if_stat->ipaddr, "0.0.0.0", 64);
                     virStrncpy(node_if_stat->gateway, "0.0.0.0", 64, 64);
 
@@ -2448,6 +2449,9 @@ int virExtCapabilitiesNodeGetDiskStat(const char* name, virNodeExtDiskStatPtr st
                 {
 
                     VIR_INFO("SUCCESSFUL: get %d-th dev %s read_rate = %.2f KB/s, write_rate= %.2f KB/s", dev_index, tmp_dev_name, tmp_read_rate, tmp_write_rate);
+
+                    memset(stat->dev_name, 0, sizeof(stat->dev_name));
+                    strncpy(stat->dev_name, name, 16);
                     stat->read_rate = tmp_read_rate;
                     stat->write_rate = tmp_write_rate;
 
