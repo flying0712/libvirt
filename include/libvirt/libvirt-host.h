@@ -849,20 +849,19 @@ int virNodeAllocPages(virConnectPtr conn,
                       unsigned int cellCount,
                       unsigned int flags);
 
-
-
-#define COMMON_SMALL_LEN 16
-#define COMMON_MIDDLE_LEN 64
-#define COMMON_BIG_LEN 128
+/*
+* ======================================================
+*
+* new api start from here
+*
+* ======================================================
+*/
 
 #define BUF_MAXLEN 1024
 #define IFNAME_MAXLEN 16
 #define DEV_NAME_MAXLEN 16
-#define CPU_MODEL_NAME_MAXLEN 64
+#define CPU_MODEL_NAME_MAXLEN 128
 #define IPADDR_MAXLEN 64
-
-#define SPICE_PORT_MIN 5900
-#define SPICE_PORT_MAX 65535
 
 #define DNS_MAX_NUM 4
 
