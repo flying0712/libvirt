@@ -23152,7 +23152,7 @@ qemuNodeExtGetInfo(virConnectPtr conn,
 {
 
     // CPUInfo cpu_info;
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtGetInfoEnsureACL(conn) < 0)//todo: modify
         return -1;
 
     VIR_INFO("+++++++++++++++TEST begin\n");
@@ -23166,7 +23166,7 @@ static int
 qemuNodeExtListInterfaces(virConnectPtr conn, char ** ifnames, int maxifnames)
 {
 
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtListInterfacesEnsureACL(conn) < 0)//todo: modify
         return -1;
 
 
@@ -23192,7 +23192,7 @@ static int
 qemuNodeExtGetIfStat(virConnectPtr conn, const char * name, virNodeExtIfStatPtr node_if_stat)
 {
 
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtGetIfStatEnsureACL(conn) < 0)//todo: modify
         return -1;
 
 
@@ -23212,7 +23212,7 @@ static int
 qemuNodeExtListDisks(virConnectPtr conn, char ** names, int maxnames)
 {
 
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtListDisksEnsureACL(conn) < 0)//todo: modify
         return -1;
 
     VIR_INFO("+++++++++++++++ begin\n");
@@ -23238,7 +23238,7 @@ static int
 qemuNodeExtGetDiskStat(virConnectPtr conn, const char * name, virNodeExtDiskStatPtr stat)
 {
 
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtGetDiskStatEnsureACL(conn) < 0)//todo: modify
         return -1;
 
     VIR_INFO("+++++++++++++++ begin\n");
@@ -23258,7 +23258,7 @@ static int
 qemuNodeExtListDNS(virConnectPtr conn, char ** names, int maxnames)
 {
 
-    if (virNodeGetInfoEnsureACL(conn) < 0)//todo: modify
+    if (virNodeExtListDNSEnsureACL(conn) < 0)//todo: modify
         return -1;
 
     VIR_INFO("+++++++++++++++ begin\n");
