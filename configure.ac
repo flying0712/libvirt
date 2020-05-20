@@ -252,6 +252,8 @@ if test "$with_libvirtd" = "no" ; then
   with_vbox=no
 fi
 
+enable_werror=no
+
 # Check for compiler and library settings.
 
 LIBVIRT_COMPILE_WARNINGS
@@ -917,7 +919,7 @@ m4_if(m4_version_compare([2.61a.100],
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([\
-        Makefile src/Makefile include/libvirt/Makefile docs/Makefile \
+        Makefile src/Makefile include/libvirt/Makefile  \
         .color_coded \
         .ycm_extra_conf.py \
         libvirt.pc \

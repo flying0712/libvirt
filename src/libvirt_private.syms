@@ -80,12 +80,11 @@ virCapabilitiesNew;
 virCapabilitiesSetNetPrefix;
 
 virExtCapabilitiesGetNodeInfo;
-virExtCapabilitiesNodeGetIfStat;
-virExtCapabilitiesNodeListInterfaces;
-virExtCapabilitiesNodeListDisks;
-virExtCapabilitiesNodeGetDiskStat;
 virExtCapabilitiesNodeDNS;
-
+virExtCapabilitiesNodeGetDiskStat;
+virExtCapabilitiesNodeGetIfStat;
+virExtCapabilitiesNodeListDisks;
+virExtCapabilitiesNodeListInterfaces;
 
 # conf/checkpoint_conf.h
 virDomainCheckpointAlignDisks;

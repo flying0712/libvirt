@@ -898,8 +898,8 @@ cmdNodeExtDNSList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     int realIfNum = 0;
     int i = 0;
 
-    char * dns_servers[4] = {0};
-    realIfNum = virNodeExtListDNS(priv->conn, dns_servers, 4);
+    char * dns_servers[3] = {0};
+    realIfNum = virNodeExtListDNS(priv->conn, dns_servers, 3);
 
     if ( realIfNum < 0) {
 

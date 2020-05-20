@@ -50,7 +50,6 @@
 #include "qemu_security.h"
 #include "qemu_checkpoint.h"
 #include "qemu_backup.h"
-#include "qemu_ext.h"
 
 #include "virerror.h"
 #include "virlog.h"

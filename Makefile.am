@@ -23,7 +23,10 @@ GENHTML = genhtml
 # so force it explicitly
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
-SUBDIRS = . include/libvirt src tools docs \
+#SUBDIRS = . include/libvirt src tools docs \
+#  tests po examples
+  
+SUBDIRS = . include/libvirt src tools  \
   tests po examples
 
 XZ_OPT ?= -v -T0
