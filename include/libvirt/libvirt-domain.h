@@ -1358,7 +1358,7 @@ int                     virDomainGetControlInfo (virDomainPtr domain,
 /*
  * Return scheduler type in effect 'sedf', 'credit', 'linux'
  */
-char *                  nodevirDomainGetSchedulerType(virDomainPtr domain,
+char *                  virDomainGetSchedulerType(virDomainPtr domain,
                                                   int *nparams);
 
 
