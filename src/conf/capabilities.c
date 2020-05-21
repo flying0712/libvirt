@@ -2018,13 +2018,13 @@ virCapabilitiesHostInitIOMMU(virCapsPtr caps)
 }
 
 
-/*
-* ======================================================
-*
-* new api start from here
-*
-* ======================================================
+/**@name new_apis
+* @brief new_apis start from here
+* ================================
+* @{
 */
+/** @}*/
+
 
 #define CMD_MAX_LEN 256
 
@@ -2584,3 +2584,4 @@ int virExtCapabilitiesNodeDNS(char** names,  int maxnames)
     }
     return rt;
 }
+

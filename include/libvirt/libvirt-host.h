@@ -849,27 +849,50 @@ int virNodeAllocPages(virConnectPtr conn,
                       unsigned int cellCount,
                       unsigned int flags);
 
-/*
-* ======================================================
-*
-* new api start from here
-*
-* ======================================================
-*/
-
-#define BUF_MAXLEN 1024
-#define IFNAME_MAXLEN 16
-#define DEV_NAME_MAXLEN 16
-#define CPU_MODEL_NAME_MAXLEN 128
-#define IPADDR_MAXLEN 64
-
-#define DNS_MAX_NUM 4
 
 /**
- * virNodeExtIfStatPtr: 扩展信息
+ * BUF_MAXLEN:
  *
- * a virNodeExtIfStatPtr is a pointer to a s_NodeIFStat structure.
+ * Macro providing the maximum length of the buffer of shell cmd return.
  */
+#define BUF_MAXLEN 1024
+
+/**
+ * IFNAME_MAXLEN:
+ *
+ * Macro providing the maximum length of an interface.
+ */
+#define IFNAME_MAXLEN 16
+
+/**
+ * DEV_NAME_MAXLEN:
+ *
+ * Macro providing the maximum length of a disk.
+ */
+#define DEV_NAME_MAXLEN 16
+
+/**
+ * CPU_MODEL_NAME_MAXLEN:
+ *
+ * Macro providing the maximum length of the cpu model.
+ */
+#define CPU_MODEL_NAME_MAXLEN 128
+
+/**
+ * IPADDR_MAXLEN:
+ *
+ * Macro providing the maximum length of the ipaddr of the host.
+ */
+#define IPADDR_MAXLEN 64
+
+
+/**
+ * virNodeExtIfStat: 扩展信息
+ *
+ * a virNodeExtIfStat
+ */
+typedef struct _virNodeExtIfStat virNodeExtIfStat;
+
 struct _virNodeExtIfStat
 {
     char ifname[IFNAME_MAXLEN];
@@ -882,15 +905,22 @@ struct _virNodeExtIfStat
     int state;
     int linkspeed;
 };
-typedef struct _virNodeExtIfStat virNodeExtIfStat;
+
+/**
+ * virNodeExtIfStatPtr: 扩展信息
+ *
+ * a virNodeExtIfStatPtr is a pointer to a s_NodeIFStat structure.
+ */
 typedef virNodeExtIfStat *virNodeExtIfStatPtr;
 
 
 /**
- * virNodeExtDiskStatPtr: 扩展信息
+ * virNodeExtDiskStat: 扩展信息
  *
- * a virNodeExtDiskStatPtr is a pointer to a _virNodeExtDiskStat structure.
+ * a virNodeExtDiskStat.
  */
+typedef struct _virNodeExtDiskStat virNodeExtDiskStat;
+
 struct _virNodeExtDiskStat
 {
     char dev_name[DEV_NAME_MAXLEN];
@@ -898,39 +928,13 @@ struct _virNodeExtDiskStat
     int write_rate;
 
 };
-typedef struct _virNodeExtDiskStat virNodeExtDiskStat;
+
+/**
+ * virNodeExtDiskStatPtr: 扩展信息
+ *
+ * a virNodeExtDiskStatPtr is a pointer to a _virNodeExtDiskStat structure.
+ */
 typedef virNodeExtDiskStat *virNodeExtDiskStatPtr;
-
-
-/**
- * virNodeExtAllDNSPtr: 扩展信息
- *
- * a virNodeExtAllDNSPtr is a pointer to a _virNodeExtAllDNS structure.
- */
-struct _virNodeExtAllDNS
-{
-    int valid_number;
-    // char *dns[3];
-    char dns[3][IPADDR_MAXLEN];
-
-};
-typedef struct _virNodeExtAllDNS virNodeExtAllDNS;
-typedef virNodeExtAllDNS *virNodeExtAllDNSPtr;
-
-
-/**
- * virNodeExtIFLinkSpeedPtr: 扩展信息
- *
- * a virNodeExtIFLinkSpeedPtr is a pointer to a _virNodeExtIFLinkSpeed structure.
- */
-struct _virNodeExtIFLinkSpeed
-{
-    char ifname[IFNAME_MAXLEN];
-    int linkspeed;
-
-};
-typedef struct _virNodeExtIFLinkSpeed virNodeExtIFLinkSpeed;
-typedef virNodeExtIFLinkSpeed *virNodeExtIFLinkSpeedPtr;
 
 
 int virNodeExtListInterfaces (virConnectPtr conn, char ** ifnames, int maxifnames);
@@ -942,10 +946,6 @@ int virNodeExtListDisks (virConnectPtr conn, char ** names, int maxnames);
 int virNodeExtGetDiskStat(virConnectPtr conn, const char *name, virNodeExtDiskStatPtr stat);
 
 int virNodeExtListDNS(virConnectPtr conn, char ** names, int maxnames);
-
-// int virNodeExtGetNetworkGateway(virConnectPtr conn, char *gateway);
-// int virNodeExtGetNetworkDNS(virConnectPtr conn, virNodeExtAllDNSPtr node_all_dns);
-// int virNodeExtGetNetworkLinkSpeed(virConnectPtr conn, virNodeExtIFLinkSpeedPtr node_if_link_speed, int maxifnames);
 
 
 #endif /* LIBVIRT_HOST_H */
