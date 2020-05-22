@@ -98,8 +98,8 @@
 %define with_libssh2       0%{!?_without_libssh2:0}
 %define with_wireshark     0%{!?_without_wireshark:0}
 %define with_libssh        0%{!?_without_libssh:0}
-# %define with_bash_completion  0%{!?_without_bash_completion:0}
-# %define with_bash_completion  0
+%define with_bash_completion  0%{!?_without_bash_completion:0}
+
 # Finally set the OS / architecture specific special cases
 
 # Xen is available only on i386 x86_64 ia64
@@ -184,8 +184,7 @@
     %define with_libssh 0%{!?_without_libssh:1}
 %endif
 
-# %define with_bash_completion  0%{!?_without_bash_completion:1}
-
+%define with_bash_completion  0%{!?_without_bash_completion:1}
 
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
@@ -208,7 +207,6 @@
 %else
     %define enable_werror --disable-werror
 %endif
-%define enable_werror --disable-werror
 
 %if 0%{?rhel} == 7
     %define tls_priority "NORMAL"
@@ -260,160 +258,160 @@ Requires: libvirt-libs = %{version}-%{release}
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
 %if 0%{?enable_autotools}
-#BuildRequires: autoconf
-#BuildRequires: automake
-#BuildRequires: gettext-devel
-#BuildRequires: libtool
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: gettext-devel
+BuildRequires: libtool
 %endif
 %if 0%{?rhel} == 7
-#BuildRequires: python36-docutils
+BuildRequires: python36-docutils
 %else
-#BuildRequires: python3-docutils
+BuildRequires: python3-docutils
 %endif
-#BuildRequires: gcc
-#BuildRequires: git
+BuildRequires: gcc
+BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
-#BuildRequires: perl-interpreter
+BuildRequires: perl-interpreter
 %else
-#BuildRequires: perl
+BuildRequires: perl
 %endif
-#BuildRequires: python3
-#BuildRequires: systemd-units
+BuildRequires: python3
+BuildRequires: systemd-units
 %if %{with_libxl}
-#BuildRequires: xen-devel
+BuildRequires: xen-devel
 %endif
-#BuildRequires: glib2-devel >= 2.48
-#BuildRequires: libxml2-devel
-#BuildRequires: libxslt
-#BuildRequires: readline-devel
+BuildRequires: glib2-devel >= 2.48
+BuildRequires: libxml2-devel
+BuildRequires: libxslt
+BuildRequires: readline-devel
 %if %{with_bash_completion}
-#BuildRequires: bash-completion >= 2.0
+BuildRequires: bash-completion >= 2.0
 %endif
-#BuildRequires: ncurses-devel
-#BuildRequires: gettext
-#BuildRequires: libtasn1-devel
-#BuildRequires: gnutls-devel
-#BuildRequires: libattr-devel
+BuildRequires: ncurses-devel
+BuildRequires: gettext
+BuildRequires: libtasn1-devel
+BuildRequires: gnutls-devel
+BuildRequires: libattr-devel
 # For pool-build probing for existing pools
-#BuildRequires: libblkid-devel >= 2.17
+BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
-#BuildRequires: augeas
-#BuildRequires: systemd-devel >= 185
-#BuildRequires: libpciaccess-devel >= 0.10.9
-#BuildRequires: yajl-devel
+BuildRequires: augeas
+BuildRequires: systemd-devel >= 185
+BuildRequires: libpciaccess-devel >= 0.10.9
+BuildRequires: yajl-devel
 %if %{with_sanlock}
-#BuildRequires: sanlock-devel >= 2.4
+BuildRequires: sanlock-devel >= 2.4
 %endif
-#BuildRequires: libpcap-devel >= 1.5.0
-#BuildRequires: libnl3-devel
-#BuildRequires: libselinux-devel
-#BuildRequires: dnsmasq >= 2.41
-#BuildRequires: iptables
-#BuildRequires: radvd
-#BuildRequires: ebtables
-#BuildRequires: module-init-tools
-#BuildRequires: cyrus-sasl-devel
-#BuildRequires: polkit >= 0.112
+BuildRequires: libpcap-devel >= 1.5.0
+BuildRequires: libnl3-devel
+BuildRequires: libselinux-devel
+BuildRequires: dnsmasq >= 2.41
+BuildRequires: iptables
+BuildRequires: radvd
+BuildRequires: ebtables
+BuildRequires: module-init-tools
+BuildRequires: cyrus-sasl-devel
+BuildRequires: polkit >= 0.112
 # For mount/umount in FS driver
-#BuildRequires: util-linux
+BuildRequires: util-linux
 %if %{with_qemu}
 # For managing ACLs
-#BuildRequires: libacl-devel
+BuildRequires: libacl-devel
 # From QEMU RPMs
-#BuildRequires: /usr/bin/qemu-img
+BuildRequires: /usr/bin/qemu-img
 %endif
 # For LVM drivers
-#BuildRequires: lvm2
+BuildRequires: lvm2
 # For pool type=iscsi
-#BuildRequires: iscsi-initiator-utils
+BuildRequires: iscsi-initiator-utils
 %if %{with_storage_iscsi_direct}
 # For pool type=iscsi-direct
-#BuildRequires: libiscsi-devel
+BuildRequires: libiscsi-devel
 %endif
 # For disk driver
-#BuildRequires: parted-devel
+BuildRequires: parted-devel
 # For Multipath support
-#BuildRequires: device-mapper-devel
+BuildRequires: device-mapper-devel
 # For XFS reflink clone support
-#BuildRequires: xfsprogs-devel
+BuildRequires: xfsprogs-devel
 %if %{with_storage_rbd}
     %if 0%{?fedora} || 0%{?rhel} > 7
-#BuildRequires: librados-devel
-#BuildRequires: librbd-devel
+BuildRequires: librados-devel
+BuildRequires: librbd-devel
     %else
-#BuildRequires: librados2-devel
-#BuildRequires: librbd1-devel
+BuildRequires: librados2-devel
+BuildRequires: librbd1-devel
     %endif
 %endif
 %if %{with_storage_gluster}
-#BuildRequires: glusterfs-api-devel >= 3.4.1
-#BuildRequires: glusterfs-devel >= 3.4.1
+BuildRequires: glusterfs-api-devel >= 3.4.1
+BuildRequires: glusterfs-devel >= 3.4.1
 %endif
 %if %{with_storage_sheepdog}
-#BuildRequires: sheepdog
+BuildRequires: sheepdog
 %endif
 %if %{with_storage_zfs}
 # Support any conforming implementation of zfs. On stock Fedora
 # this is zfs-fuse, but could be zfsonlinux upstream RPMs
-#BuildRequires: /sbin/zfs
-#BuildRequires: /sbin/zpool
+BuildRequires: /sbin/zfs
+BuildRequires: /sbin/zpool
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
-#BuildRequires: numactl-devel
+BuildRequires: numactl-devel
 %endif
-#BuildRequires: libcap-ng-devel >= 0.5.0
+BuildRequires: libcap-ng-devel >= 0.5.0
 %if %{with_fuse}
-#BuildRequires: fuse-devel >= 2.8.6
+BuildRequires: fuse-devel >= 2.8.6
 %endif
 %if %{with_libssh2}
-#BuildRequires: libssh2-devel >= 1.3.0
+BuildRequires: libssh2-devel >= 1.3.0
 %endif
 
-#BuildRequires: netcf-devel >= 0.2.2
+BuildRequires: netcf-devel >= 0.2.2
 %if %{with_esx}
-#BuildRequires: libcurl-devel
+BuildRequires: libcurl-devel
 %endif
 %if %{with_hyperv}
-#BuildRequires: libwsman-devel >= 2.2.3
+BuildRequires: libwsman-devel >= 2.2.3
 %endif
-#BuildRequires: audit-libs-devel
+BuildRequires: audit-libs-devel
 # we need /usr/sbin/dtrace
-#BuildRequires: systemtap-sdt-devel
+BuildRequires: systemtap-sdt-devel
 
 # For mount/umount in FS driver
-#BuildRequires: util-linux
+BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
-#BuildRequires: nfs-utils
+BuildRequires: nfs-utils
 
 # Communication with the firewall and polkit daemons use DBus
-#BuildRequires: dbus-devel
+BuildRequires: dbus-devel
 
 # Fedora build root suckage
-#BuildRequires: gawk
+BuildRequires: gawk
 
 # For storage wiping with different algorithms
-#BuildRequires: scrub
+BuildRequires: scrub
 
 %if %{with_numad}
-#BuildRequires: numad
+BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-#BuildRequires: wireshark-devel >= 2.4.0
+BuildRequires: wireshark-devel >= 2.4.0
 %endif
 
 %if %{with_libssh}
-#BuildRequires: libssh-devel >= 0.7.0
+BuildRequires: libssh-devel >= 0.7.0
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} > 7
-#BuildRequires: rpcgen
-#BuildRequires: libtirpc-devel
+BuildRequires: rpcgen
+BuildRequires: libtirpc-devel
 %endif
 
 %if %{with_firewalld_zone}
-#BuildRequires: firewalld-filesystem
+BuildRequires: firewalld-filesystem
 %endif
 
 %description
@@ -1253,18 +1251,18 @@ chmod 600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml
 sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
 %if ! %{with_qemu}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_qemu.aug
-rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
+rm -f $RPM_BUILD_ROOT#%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %endif
 %find_lang %{name}
 
 %if ! %{with_sanlock}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirt_sanlock.aug
-rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
+rm -f $RPM_BUILD_ROOT#%{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
 %endif
 
 %if ! %{with_lxc}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_lxc.aug
-rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
+rm -f $RPM_BUILD_ROOT#%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %endif
 
 %if ! %{with_qemu}
@@ -1279,7 +1277,7 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.libxl
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
-rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
+rm -f $RPM_BUILD_ROOT#%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %endif
 
 # Copied into libvirt-docs subpackage eventually
@@ -1300,7 +1298,7 @@ cd %{_vpath_builddir}
 if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
 then
   cat tests/test-suite.log || true
-#  exit 1
+  exit 1
 fi
 
 %post libs
@@ -1560,16 +1558,16 @@ exit 0
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 
 %{_datadir}/augeas/lenses/libvirtd.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %{_datadir}/augeas/lenses/virtlogd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlogd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtlogd.aug
 %{_datadir}/augeas/lenses/virtlockd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
 %{_datadir}/augeas/lenses/virtproxyd.aug
-%{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
 %{_datadir}/augeas/lenses/libvirt_lockd.aug
 %if %{with_qemu}
-%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
 %endif
 
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
@@ -1585,10 +1583,10 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtlogd
 %attr(0755, root, root) %{_sbindir}/virtlockd
 
-#%{_mandir}/man8/libvirtd.8*
-#%{_mandir}/man8/virtlogd.8*
-#%{_mandir}/man8/virtlockd.8*
-#%{_mandir}/man7/virkey*.7*
+%{_mandir}/man8/libvirtd.8*
+%{_mandir}/man8/virtlogd.8*
+%{_mandir}/man8/virtlockd.8*
+%{_mandir}/man7/virkey*.7*
 
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
@@ -1604,7 +1602,7 @@ exit 0
 %files daemon-driver-interface
 %config(noreplace) %{_sysconfdir}/libvirt/virtinterfaced.conf
 %{_datadir}/augeas/lenses/virtinterfaced.aug
-%{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
+#%{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
 %{_unitdir}/virtinterfaced.service
 %{_unitdir}/virtinterfaced.socket
 %{_unitdir}/virtinterfaced-ro.socket
@@ -1615,7 +1613,7 @@ exit 0
 %files daemon-driver-network
 %config(noreplace) %{_sysconfdir}/libvirt/virtnetworkd.conf
 %{_datadir}/augeas/lenses/virtnetworkd.aug
-%{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
 %{_unitdir}/virtnetworkd.service
 %{_unitdir}/virtnetworkd.socket
 %{_unitdir}/virtnetworkd-ro.socket
@@ -1637,7 +1635,7 @@ exit 0
 %files daemon-driver-nodedev
 %config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
 %{_datadir}/augeas/lenses/virtnodedevd.aug
-%{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
 %{_unitdir}/virtnodedevd.service
 %{_unitdir}/virtnodedevd.socket
 %{_unitdir}/virtnodedevd-ro.socket
@@ -1648,7 +1646,7 @@ exit 0
 %files daemon-driver-nwfilter
 %config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
 %{_datadir}/augeas/lenses/virtnwfilterd.aug
-%{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
 %{_unitdir}/virtnwfilterd.service
 %{_unitdir}/virtnwfilterd.socket
 %{_unitdir}/virtnwfilterd-ro.socket
@@ -1661,7 +1659,7 @@ exit 0
 %files daemon-driver-secret
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
-%{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
 %{_unitdir}/virtsecretd.service
 %{_unitdir}/virtsecretd.socket
 %{_unitdir}/virtsecretd-ro.socket
@@ -1674,7 +1672,7 @@ exit 0
 %files daemon-driver-storage-core
 %config(noreplace) %{_sysconfdir}/libvirt/virtstoraged.conf
 %{_datadir}/augeas/lenses/virtstoraged.aug
-%{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
+#%{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
 %{_unitdir}/virtstoraged.service
 %{_unitdir}/virtstoraged.socket
 %{_unitdir}/virtstoraged-ro.socket
@@ -1730,7 +1728,7 @@ exit 0
 %files daemon-driver-qemu
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
-%{_datadir}/augeas/lenses/tests/test_virtqemud.aug
+#%{_datadir}/augeas/lenses/tests/test_virtqemud.aug
 %{_unitdir}/virtqemud.service
 %{_unitdir}/virtqemud.socket
 %{_unitdir}/virtqemud-ro.socket
@@ -1745,19 +1743,19 @@ exit 0
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
 %dir %attr(0750, %{qemu_user}, %{qemu_group}) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %{_libdir}/%{name}/connection-driver/libvirt_driver_qemu.so
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/swtpm/
 %dir %attr(0711, root, root) %{_localstatedir}/log/swtpm/libvirt/qemu/
 %{_bindir}/virt-qemu-run
-#%{_mandir}/man1/virt-qemu-run.1*
+%{_mandir}/man1/virt-qemu-run.1*
 %endif
 
 %if %{with_lxc}
 %files daemon-driver-lxc
 %config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
 %{_datadir}/augeas/lenses/virtlxcd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
 %{_unitdir}/virtlxcd.service
 %{_unitdir}/virtlxcd.socket
 %{_unitdir}/virtlxcd-ro.socket
@@ -1769,7 +1767,7 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/lxc/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/lxc/
 %{_datadir}/augeas/lenses/libvirtd_lxc.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %{_libdir}/%{name}/connection-driver/libvirt_driver_lxc.so
 %endif
@@ -1778,7 +1776,7 @@ exit 0
 %files daemon-driver-libxl
 %config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
 %{_datadir}/augeas/lenses/virtxend.aug
-%{_datadir}/augeas/lenses/tests/test_virtxend.aug
+#%{_datadir}/augeas/lenses/tests/test_virtxend.aug
 %{_unitdir}/virtxend.service
 %{_unitdir}/virtxend.socket
 %{_unitdir}/virtxend-ro.socket
@@ -1788,7 +1786,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
 %{_datadir}/augeas/lenses/libvirtd_libxl.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_rundir}/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
@@ -1799,7 +1797,7 @@ exit 0
 %files daemon-driver-vbox
 %config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
 %{_datadir}/augeas/lenses/virtvboxd.aug
-%{_datadir}/augeas/lenses/tests/test_virtvboxd.aug
+#%{_datadir}/augeas/lenses/tests/test_virtvboxd.aug
 %{_unitdir}/virtvboxd.service
 %{_unitdir}/virtvboxd.socket
 %{_unitdir}/virtvboxd-ro.socket
@@ -1838,18 +1836,18 @@ exit 0
     %endif
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
-%{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
+#%{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
 %dir %attr(0770, root, sanlock) %{_localstatedir}/lib/libvirt/sanlock
 %{_sbindir}/virt-sanlock-cleanup
-#%{_mandir}/man8/virt-sanlock-cleanup.8*
+%{_mandir}/man8/virt-sanlock-cleanup.8*
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
 %endif
 
 %files client
-#%{_mandir}/man1/virsh.1*
-#%{_mandir}/man1/virt-xml-validate.1*
-#%{_mandir}/man1/virt-pki-validate.1*
-#%{_mandir}/man1/virt-host-validate.1*
+%{_mandir}/man1/virsh.1*
+%{_mandir}/man1/virt-xml-validate.1*
+%{_mandir}/man1/virt-pki-validate.1*
+%{_mandir}/man1/virt-host-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
@@ -1862,7 +1860,7 @@ exit 0
 %endif
 
 %if %{with_bash_completion}
-#%{_datadir}/bash-completion/completions/virsh
+%{_datadir}/bash-completion/completions/virsh
 %endif
 
 
@@ -1879,46 +1877,46 @@ exit 0
 %{_libdir}/libvirt-lxc.so.*
 %{_libdir}/libvirt-admin.so.*
 %dir %{_datadir}/libvirt/
-#%dir %{_datadir}/libvirt/schemas/
+%dir %{_datadir}/libvirt/schemas/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
-#%{_datadir}/libvirt/schemas/basictypes.rng
-#%{_datadir}/libvirt/schemas/capability.rng
-#%{_datadir}/libvirt/schemas/cputypes.rng
-#%{_datadir}/libvirt/schemas/domain.rng
-#%{_datadir}/libvirt/schemas/domainbackup.rng
-#%{_datadir}/libvirt/schemas/domaincaps.rng
-#%{_datadir}/libvirt/schemas/domaincheckpoint.rng
-#%{_datadir}/libvirt/schemas/domaincommon.rng
-#%{_datadir}/libvirt/schemas/domainsnapshot.rng
-#%{_datadir}/libvirt/schemas/interface.rng
-#%{_datadir}/libvirt/schemas/network.rng
-#%{_datadir}/libvirt/schemas/networkcommon.rng
-#%{_datadir}/libvirt/schemas/networkport.rng
-#%{_datadir}/libvirt/schemas/nodedev.rng
-#%{_datadir}/libvirt/schemas/nwfilter.rng
-#%{_datadir}/libvirt/schemas/nwfilter_params.rng
-#%{_datadir}/libvirt/schemas/nwfilterbinding.rng
-#%{_datadir}/libvirt/schemas/secret.rng
-#%{_datadir}/libvirt/schemas/storagecommon.rng
-#%{_datadir}/libvirt/schemas/storagepool.rng
-#%{_datadir}/libvirt/schemas/storagepoolcaps.rng
-#%{_datadir}/libvirt/schemas/storagevol.rng
+%{_datadir}/libvirt/schemas/basictypes.rng
+%{_datadir}/libvirt/schemas/capability.rng
+%{_datadir}/libvirt/schemas/cputypes.rng
+%{_datadir}/libvirt/schemas/domain.rng
+%{_datadir}/libvirt/schemas/domainbackup.rng
+%{_datadir}/libvirt/schemas/domaincaps.rng
+%{_datadir}/libvirt/schemas/domaincheckpoint.rng
+%{_datadir}/libvirt/schemas/domaincommon.rng
+%{_datadir}/libvirt/schemas/domainsnapshot.rng
+%{_datadir}/libvirt/schemas/interface.rng
+%{_datadir}/libvirt/schemas/network.rng
+%{_datadir}/libvirt/schemas/networkcommon.rng
+%{_datadir}/libvirt/schemas/networkport.rng
+%{_datadir}/libvirt/schemas/nodedev.rng
+%{_datadir}/libvirt/schemas/nwfilter.rng
+%{_datadir}/libvirt/schemas/nwfilter_params.rng
+%{_datadir}/libvirt/schemas/nwfilterbinding.rng
+%{_datadir}/libvirt/schemas/secret.rng
+%{_datadir}/libvirt/schemas/storagecommon.rng
+%{_datadir}/libvirt/schemas/storagepool.rng
+%{_datadir}/libvirt/schemas/storagepoolcaps.rng
+%{_datadir}/libvirt/schemas/storagevol.rng
 
 %{_datadir}/libvirt/cpu_map/*.xml
 
 %{_datadir}/libvirt/test-screenshot.png
 
 %files admin
-#%{_mandir}/man1/virt-admin.1*
+%{_mandir}/man1/virt-admin.1*
 %{_bindir}/virt-admin
 %if %{with_bash_completion}
-#%{_datadir}/bash-completion/completions/virt-admin
+%{_datadir}/bash-completion/completions/virt-admin
 %endif
 
 %if %{with_bash_completion}
-#%files bash-completion
-#%{_datadir}/bash-completion/completions/vsh
+%files bash-completion
+%{_datadir}/bash-completion/completions/vsh
 %endif
 
 %if %{with_wireshark}
@@ -1935,7 +1933,7 @@ exit 0
 %attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
 %{_libexecdir}/virt-login-shell-helper
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
-#%{_mandir}/man1/virt-login-shell.1*
+%{_mandir}/man1/virt-login-shell.1*
 %endif
 
 %files devel
@@ -1967,11 +1965,11 @@ exit 0
 %{_libdir}/pkgconfig/libvirt-qemu.pc
 %{_libdir}/pkgconfig/libvirt-lxc.pc
 
-#%dir %{_datadir}/libvirt/api/
-#%{_datadir}/libvirt/api/libvirt-api.xml
-#%{_datadir}/libvirt/api/libvirt-admin-api.xml
-#%{_datadir}/libvirt/api/libvirt-qemu-api.xml
-#%{_datadir}/libvirt/api/libvirt-lxc-api.xml
+%dir %{_datadir}/libvirt/api/
+%{_datadir}/libvirt/api/libvirt-api.xml
+%{_datadir}/libvirt/api/libvirt-admin-api.xml
+%{_datadir}/libvirt/api/libvirt-qemu-api.xml
+%{_datadir}/libvirt/api/libvirt-lxc-api.xml
 
 
 %changelog
