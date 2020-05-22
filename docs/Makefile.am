@@ -54,14 +54,15 @@ vpathhack:
 	done
 
 clean-local:
-	for dir in fonts js logos; \
-	do \
-	  rm -f $$dir ; \
-	done
-	for file in $(css); \
-	do \
-	  rm -f $$file ; \
-	done
+	echo "skip docs clean-local"
+#	for dir in fonts js logos; \
+#	do \
+#	  rm -f $$dir ; \
+#	done
+#	for file in $(css); \
+#	do \
+#	  rm -f $$file ; \
+#	done
 
 apihtml = \
   html/index.html \

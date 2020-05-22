@@ -722,7 +722,7 @@ if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
-LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [check])
+LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [no])
 case "$with_test_suite" in
     yes|no|check) ;;
     *) AC_MSG_ERROR([bad value ${withval} for tests option]) ;;

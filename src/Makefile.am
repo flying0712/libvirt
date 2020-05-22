@@ -153,6 +153,8 @@ augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
 
+# augeastest_DATA =
+
 CLEANFILES += $(augeastest_DATA)
 
 # Internal generic driver infrastructure
@@ -331,17 +333,20 @@ GENERATED_SYM_FILES += \
 
 check-local: check-augeas
 
-check-augeas: $(augeas_DATA) $(augeastest_DATA)
-	$(AM_V_GEN) \
-	if test -x "$(AUGPARSE)"; then \
-	    for f in $(augeastest_DATA); do \
-		DIR=$$(dirname "$$f"); \
-		FILE=$$(basename "$$f"); \
-		"$(AUGPARSE)" \
-		    -I "$(srcdir)/$$DIR" -I "$(builddir)/$$DIR" \
-		    "$$DIR/$$FILE" || exit 1; \
-	    done; \
-	fi
+check-augeas: $(augeas_DATA)
+	echo "skip augeastest_DATA"
+
+#check-augeas: $(augeas_DATA) $(augeastest_DATA)
+#	$(AM_V_GEN) \
+#	if test -x "$(AUGPARSE)"; then \
+#	    for f in $(augeastest_DATA); do \
+#		DIR=$$(dirname "$$f"); \
+#		FILE=$$(basename "$$f"); \
+#		"$(AUGPARSE)" \
+#		    -I "$(srcdir)/$$DIR" -I "$(builddir)/$$DIR" \
+#		    "$$DIR/$$FILE" || exit 1; \
+#	    done; \
+#	fi
 .PHONY: check-augeas
 
 AUG_GENTEST_SCRIPT = $(top_srcdir)/scripts/augeas-gentest.py
