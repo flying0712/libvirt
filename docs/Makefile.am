@@ -155,7 +155,7 @@ logofiles = \
   logos/logo-banner-light-800.png
 
 logofilesdir = $(HTML_DIR)/logos
-logofiles_DATA = $(logofiles)
+logofiles_DATA = $(sort $(logofiles))
 
 png = \
   32favicon.png \
@@ -326,8 +326,9 @@ dot_html = \
   $(dot_html_in:%.html.in=%.html) \
   $(dot_rst_html_in:%.html.in=%.html)
 
+
 htmldir = $(HTML_DIR)
-html_DATA = $(css) $(png) $(gif) $(dot_html)
+html_DATA = $(sort $(css) $(png) $(gif) $(dot_html))
 
 apidir = $(pkgdatadir)/api
 api_DATA = \
